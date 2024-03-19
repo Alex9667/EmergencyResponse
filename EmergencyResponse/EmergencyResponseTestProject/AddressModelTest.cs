@@ -1,5 +1,7 @@
+using System.Drawing;
 using System.Net.Sockets;
 using EmergencyResponse.Model;
+using Xunit;
 
 namespace EmergencyResponseTestProject
 {
@@ -14,6 +16,77 @@ namespace EmergencyResponseTestProject
             // Initialiser APIValidator før hver test
             _validator = new APIValidator();
         }
+
+        [Theory]
+        [InlineData("0a31asdac-2mnsb-3218-e042-0003ba293131", "Oak Avenue", "1011", null, "D", "13579", "City D", "addr4")]
+        public void Create_Address(string id, string streetName, string houseNumber, int? floor, string door, 
+            string postalCode, string postalCodeName, string addressId)
+        {
+            //Arrange
+            Address result = new Address
+            {
+                Id = "0a31asdac-2mnsb-3218-e042-0003ba293131",
+                StreetName = "Oak Avenue",
+                HouseNumber = "1011",
+                Floor = null,
+                Door = "D",
+                PostalCode = "13579",
+                PostalCodeName = "City D"
+            };
+
+            //Act
+            Address expectedResult = new Address
+            {
+                Id = id,
+                StreetName = streetName,
+                HouseNumber = houseNumber,
+                Floor = floor,
+                Door = door,
+                PostalCode = postalCode,
+                PostalCodeName = postalCodeName,
+                AddressId = addressId
+            };
+
+
+            // Assert
+            expectedResult.Equals(result);
+        }
+
+
+        public static IEnumerable<object[]> GetAddressData()
+        {
+            yield return new object[]
+            {
+                "0a31asdac-2mnsb-3218-e042-0003ba293131", null, "1011", null, "D", "13579", "City D", "addr4"
+            };
+        }
+
+        [Theory, MemberData(nameof(GetAddressData))]
+        public void MemberDataAddition_ShouldCalculateCorrectly(string id, string streetName, string houseNumber, int? floor, string door,
+            string postalCode, string postalCodeName, string addressId)
+        {
+            //Act
+            Action act = () => {
+                Address expectedResult = new Address
+                {
+                    Id = id,
+                    StreetName = streetName,
+                    HouseNumber = houseNumber,
+                    Floor = floor,
+                    Door = door,
+                    PostalCode = postalCode,
+                    PostalCodeName = postalCodeName,
+                    AddressId = addressId
+                };
+            };
+
+            var exception = Record.Exception(act);
+
+
+            // Assert
+            Microsoft.VisualStudio.TestTools.UnitTesting.Assert.ThrowsException<NullReferenceException>(act);
+        }
+
 
         [TestMethod]
         public void ValidateAddress_ShouldReturnTrue_ForValidAddress()
@@ -79,4 +152,5 @@ namespace EmergencyResponseTestProject
             // Assert
             Assert.IsFalse(result, "Expected validation to fail for an empty zip code.");
         }
+    }
 }
