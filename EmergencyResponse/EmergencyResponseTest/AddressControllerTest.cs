@@ -12,12 +12,13 @@ using System.Net;
 using System.Runtime.InteropServices;
 using Moq.Protected;
 using System.Text.Json;
+using System.Net.Http;
 
 namespace EmergencyResponseTest
 {
     public class AddressControllerTest
     {
-        private AddressController _addressController;
+        private readonly AddressController _addressController;
         public AddressControllerTest()
         {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -129,7 +130,12 @@ namespace EmergencyResponseTest
                 },
 
             };
-        }
+
+        //public AddressControllerTest()
+        //{
+        //    HttpClient httpClient = new HttpClient(); 
+        //    _addressController = new AddressController(httpClient);
+        //}
 
         public static IEnumerable<Object[]> GetAddressesForAddressSearch()
         {
@@ -165,6 +171,17 @@ namespace EmergencyResponseTest
                 },
 
             };
+
+            //Address address = _addressController.GetAddress();
+            //address.Should().NotBeNull();   
+        }
+
+        [Theory]
+        [InlineData("Nygade 74 7430 Ikast")]
+        public void AddressController_GetAddressBFE_ShouldReturnString(string address)
+        {
+            Task<int> bfe = _addressController.GetAddressBFE(address);
+            bfe.ToString().Should().NotBeNullOrEmpty();
         }
     }
 }
