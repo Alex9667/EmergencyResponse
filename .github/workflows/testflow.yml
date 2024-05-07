@@ -8,7 +8,9 @@ on:
 jobs:
   test:
     runs-on: windows-latest
+    defaults:
+      run: 
+        working-directory: EmergencyResponse
     steps:
       - uses: actions/checkout@v2
       - run: dotnet test
-      - working-directory: /EmergencyResponse
