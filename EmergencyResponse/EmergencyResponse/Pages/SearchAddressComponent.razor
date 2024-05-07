@@ -6,7 +6,7 @@
 
 <div>
     <h2>Address Details</h2>
-    <form>
+    <form @onsubmit="SearchAddress">
         <div>
             <label for="street">Vejnavn:</label>
             <input type="text" id="street" name="street" @bind="address.StreetName" />
@@ -31,18 +31,22 @@
             <label for="door">Dør:</label>
             <input type="text" id="door" name="door" @bind="address.Door" />
         </div>
-        <button type="submit" @onsubmit="SearchAddress">Submit</button>
+        <button type="submit" >Submit</button>
     </form>
 </div>
 
 @code {
-    public Address address;
+    public Address address = new Address();
 
     public async Task SearchAddress()
     {
         var httpClient = new HttpClient();
         var addressController = new AddressController(httpClient);
         var result = await addressController.SearchAddress(address);
-        var hi = result[0].StreetName;
+        if (result.Count > 0)
+        {
+            var hi = result[0].StreetName;
+            
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
 
 namespace EmergencyResponse.Controller
 {
@@ -53,16 +54,29 @@ namespace EmergencyResponse.Controller
 
         public async Task<List<Address>> SearchAddress(Address address)
         {
-            var floor = address.Floor == null ? "" : address.Floor.ToString();
-            var door = address.Door == null ? "" : address.Door;
-            var URL = $"https://api.dataforsyningen.dk/adresser" +
-                $"?vejnavn{address.StreetName}" +
-                $"&husnr{address.HouseNumber}" +
-                $"&postnr{address.PostalCode}" +
-                $"&etage={floor}" +
-                $"&dør={door}&struktur=mini";
+            var floorValue = address.Floor == null ? "" : address.Floor.ToString();
+            var doorValue = address.Door == null ? "" : address.Door;
+            var URL = $"https://api.dataforsyningen.dk/adresser?q={address.StreetName} " +
+                $"{address.HouseNumber} " +
+                $"{address.PostalCode} " +
+                $"{floorValue} " +
+                $"{doorValue}&struktur=mini";
             var response = await _httpClient.GetAsync(URL);
-            var result = await JsonSerializer.DeserializeAsync<List<Address>>(response.Content.ReadAsStream());
+            var obj = JsonSerializer.Deserialize<List<JsonElement>>(response.Content.ReadAsStream());
+            List<Address> result = new List<Address>();
+            foreach (var item in obj)
+            {
+                var streetname = item.GetProperty("vejnavn").GetString();
+                var houseNumber = item.GetProperty("husnr").GetString();
+                var postalCode = item.GetProperty("postnr").GetString();
+                var postalCodeName = item.GetProperty("postnrnavn").GetString();
+                item.TryGetProperty("etage", out var floorProperty);
+                int? floor = floorProperty.ValueKind == JsonValueKind.Null ? null : floorProperty.GetInt32();
+                item.TryGetProperty("etage", out var doorProperty);
+                string door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
+                var addressId = item.GetProperty("id").GetString();
+                result.Add(new("id", streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId));
+            }
             return result;
         }
         public async Task<int> GetAddressBFE(string address)
@@ -92,7 +106,7 @@ namespace EmergencyResponse.Controller
                 JsonElement root = doc.RootElement[0];
 
                 // Gets the land piece
-                landPiece= root.GetProperty("husnummer").GetProperty("jordstykke").GetString();
+                landPiece = root.GetProperty("husnummer").GetProperty("jordstykke").GetString();
             }
 
             string bfeStepThree = await _httpClient.GetStringAsync("https://services.datafordeler.dk//BBR/BBRPublic/1/rest/grund?jordstykke=" + landPiece + "&&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024");
@@ -104,7 +118,7 @@ namespace EmergencyResponse.Controller
                 JsonElement root = doc.RootElement[0];
 
                 // Gets the land piece
-                bfe = root.GetProperty("bestemtFastEjendom").GetProperty("bfeNummer").GetInt32();  
+                bfe = root.GetProperty("bestemtFastEjendom").GetProperty("bfeNummer").GetInt32();
             }
             return bfe;
         }
