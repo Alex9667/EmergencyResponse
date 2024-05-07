@@ -1,6 +1,6 @@
-﻿@using EmergencyResponse.Model
+﻿@page "/searchAddress"
+@using EmergencyResponse.Model
 @using EmergencyResponse.Controller
-@inject AddressController addressController
 
 <h3>Søg efter adresse</h3>
 
@@ -31,15 +31,18 @@
             <label for="door">Dør:</label>
             <input type="text" id="door" name="door" @bind="address.Door" />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" @onsubmit="SearchAddress">Submit</button>
     </form>
 </div>
 
 @code {
     public Address address;
 
-    public void SearchAddress()
+    public async Task SearchAddress()
     {
-        // addressController.
+        var httpClient = new HttpClient();
+        var addressController = new AddressController(httpClient);
+        var result = await addressController.SearchAddress(address);
+        var hi = result[0].StreetName;
     }
 }
