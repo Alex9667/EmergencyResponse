@@ -4,7 +4,7 @@ namespace EmergencyResponse.Interfaces
 {
     public interface IAddressRepo
     {
-        public void CreateAddress(string address);
+        public Address CreateAddress(string address);
 
         public Address GetAddress(string address);
 

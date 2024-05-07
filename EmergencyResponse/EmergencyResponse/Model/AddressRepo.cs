@@ -3,7 +3,7 @@ namespace EmergencyResponse.Model
 {
     public class AddressRepo : IAddressRepo
     {
-        public void CreateAddress(string address)
+        public Address CreateAddress(string address)
         {
             throw new NotImplementedException();
         }

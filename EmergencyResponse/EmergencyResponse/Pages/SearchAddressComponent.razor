@@ -1,0 +1,48 @@
+﻿@page "/searchAddress"
+@using EmergencyResponse.Model
+@using EmergencyResponse.Controller
+
+<h3>Søg efter adresse</h3>
+
+<div>
+    <h2>Address Details</h2>
+    <form>
+        <div>
+            <label for="street">Vejnavn:</label>
+            <input type="text" id="street" name="street" @bind="address.StreetName" />
+        </div>
+        <div>
+            <label for="houseNumber">Husnummer:</label>
+            <input type="text" id="houseNumber" name="houseNumber" @bind="address.HouseNumber" />
+        </div>
+        <div>
+            <label for="postalCode">Postnummer:</label>
+            <input type="text" id="postalCode" name="postalCode" @bind="address.PostalCode" />
+        </div>
+        <div>
+            <label for="postalCodeName">By:</label>
+            <input type="text" id="postalCodeName" name="postalCodeName" @bind="address.PostalCodeName" />
+        </div>
+        <div>
+            <label for="floor">Etage:</label>
+            <input type="text" id="floor" name="floor" @bind="address.Floor" />
+        </div>
+        <div>
+            <label for="door">Dør:</label>
+            <input type="text" id="door" name="door" @bind="address.Door" />
+        </div>
+        <button type="submit" @onsubmit="SearchAddress">Submit</button>
+    </form>
+</div>
+
+@code {
+    public Address address;
+
+    public async Task SearchAddress()
+    {
+        var httpClient = new HttpClient();
+        var addressController = new AddressController(httpClient);
+        var result = await addressController.SearchAddress(address);
+        var hi = result[0].StreetName;
+    }
+}
