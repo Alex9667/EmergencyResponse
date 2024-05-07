@@ -64,6 +64,7 @@ namespace EmergencyResponse.Controller
             var response = await _httpClient.GetAsync(URL);
             var result = await JsonSerializer.DeserializeAsync<List<Address>>(response.Content.ReadAsStream());
             return result;
+        }
         public async Task<int> GetAddressBFE(string address)
         {
             string bfeStepOne = await _httpClient.GetStringAsync("https://api.dataforsyningen.dk/adresser?q=" + address + "&struktur=mini");

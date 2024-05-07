@@ -18,7 +18,7 @@ namespace EmergencyResponseTest
 {
     public class AddressControllerTest
     {
-        private readonly AddressController _addressController;
+        private AddressController _addressController;
         public AddressControllerTest()
         {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -130,6 +130,7 @@ namespace EmergencyResponseTest
                 },
 
             };
+        }
 
         //public AddressControllerTest()
         //{
