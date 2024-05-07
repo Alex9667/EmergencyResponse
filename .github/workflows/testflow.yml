@@ -3,7 +3,7 @@ name: testworkflow
 on:
   push:
     branches:
-      -main
+      - main
 
 jobs:
   test:
