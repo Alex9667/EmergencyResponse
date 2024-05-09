@@ -1,11 +1,9 @@
 using System.Net;
 using EmergencyResponse.Model;
-using FluentAssertions;
-using Xunit;
 
 namespace EmergencyResponseTest
 {
-    public class UnitTest1
+    public class AddressModelTest
     {
        // [TestClass]
         public class APIValidatorTests

@@ -3,12 +3,15 @@ using EmergencyResponse.ExternalServices.Interfaces;
 using FluentAssertions.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using EmergencyResponse.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpClient();
+
 
 // Register DataforsyningenService with HttpClient
 builder.Services.AddHttpClient<IDataforsyningService, DataforsyningenService>(client =>

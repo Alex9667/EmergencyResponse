@@ -13,7 +13,7 @@
         public double? Latitude { get; private set; }
         public double? Longitude { get; private set; }
 
-        public Address(string id, string streetName, string houseNumber, int? floor, string door, string postalCode, string postalCodeName)
+        public Address(string id, string streetName, string houseNumber, int? floor, string? door, string postalCode, string? postalCodeName, string? addressId = null)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id), "Id cannot be null.");
             StreetName = streetName ?? throw new ArgumentNullException(nameof(streetName), "StreetName cannot be null.");
@@ -22,6 +22,11 @@
             Door = door; // Nullable, no check needed
             PostalCode = postalCode ?? throw new ArgumentNullException(nameof(postalCode), "PostalCode cannot be null.");
             PostalCodeName = postalCodeName ?? throw new ArgumentNullException(nameof(postalCodeName), "PostalCodeName cannot be null.");
+            AddressId = addressId;
+        }
+
+        public Address()
+        {
         }
 
         public void SetAddressId(string addressId)
