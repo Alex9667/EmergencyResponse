@@ -13,7 +13,7 @@ namespace EmergencyResponse.Model
             throw new NotImplementedException();
         }
 
-        public Address UpdateAddress(string streetName, string houseNumber, int? floor, string door,
+        public Address UpdateAddress(string streetName, string houseNumber, string? floor, string door,
                                   string postalCode, string postalCodeName)
         {
             throw new NotImplementedException();

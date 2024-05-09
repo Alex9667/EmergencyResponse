@@ -29,8 +29,8 @@ namespace EmergencyResponseTest
         }
 
         [Theory]
-        [InlineData("{\"StreetName\":\"æblevej\", \"HouseNumber\":\"15\", \"Floor\":1, \"Door\":\"b\", \"PostalCode\":\"5000\", \"PostalCodeName\": \"odense C\", \"AddressId\": \"khskhkshfdjflacoope\"}", "æblevej", "15", 1, "b", "5000", "odense C", "khskhkshfdjflacoope")]
-        public void AddressController_CreateAddress_FromString_ShouldReturnCreatedAddress(string json, string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
+        [InlineData("{\"StreetName\":\"æblevej\", \"HouseNumber\":\"15\", \"Floor\":1, \"Door\":\"b\", \"PostalCode\":\"5000\", \"PostalCodeName\": \"odense C\", \"AddressId\": \"khskhkshfdjflacoope\"}", "æblevej", "15", "1", "b", "5000", "odense C", "khskhkshfdjflacoope")]
+        public void AddressController_CreateAddress_FromString_ShouldReturnCreatedAddress(string json, string streetName, string houseNumber, string? floor, string? door, string postalCode, string postalCodeName, string addressId)
         {
             var result = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
             var address = _addressController.CreateAddress(json);
@@ -38,8 +38,8 @@ namespace EmergencyResponseTest
         }
 
         [Theory]
-        [InlineData("æblevej", "15", 1, "b", "5000", "odense C", "khskhkshfdjflacoope")]
-        public void AddressController_CreateAddress_FromValues_ShouldReturnCreatedAddress(string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
+        [InlineData("æblevej", "15", "1", "b", "5000", "odense C", "khskhkshfdjflacoope")]
+        public void AddressController_CreateAddress_FromValues_ShouldReturnCreatedAddress(string streetName, string houseNumber, string? floor, string? door, string postalCode, string postalCodeName, string addressId)
         {
             var result = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
 
@@ -89,24 +89,24 @@ namespace EmergencyResponseTest
             return new List<object[]>
             {
                 new object[] {
-                    new Address("Æblevej", "15", 1, "b", "5000", "odense C", "hkdhkfjskf"),
+                    new Address("Æblevej", "15", "1", "b", "5000", "odense C", "hkdhkfjskf"),
                     new List<Address> {
-                        new Address("Æblevej", "15", 1, "a", "5000", "odense C", "nnkdnvkdn"),
-                        new Address("Æblevej", "15", 1, "c", "5000", "odense C", "joidsdlksjls"),
-                        new Address("Æblevej", "15", 2, "a", "5000", "odense C", "eksknfkskf"),
-                        new Address("Æblevej", "15", 2, "b", "5000", "odense C", "skjekskjf"),
-                        new Address("Æblevej", "15", 2, "c", "5000", "odense C", "ldgjrigdl")
+                        new Address("Æblevej", "15", "1", "a", "5000", "odense C", "nnkdnvkdn"),
+                        new Address("Æblevej", "15", "1", "c", "5000", "odense C", "joidsdlksjls"),
+                        new Address("Æblevej", "15", "2", "a", "5000", "odense C", "eksknfkskf"),
+                        new Address("Æblevej", "15", "2", "b", "5000", "odense C", "skjekskjf"),
+                        new Address("Æblevej", "15", "2", "c", "5000", "odense C", "ldgjrigdl")
                     },
                     new object[] {
-                        new Address("Hovedgaden", "7", 2, "th", "5230", "odense M", "hkdhkfjskf"),
+                        new Address("Hovedgaden", "7", "2", "th", "5230", "odense M", "hkdhkfjskf"),
                         new List<Address> {
-                            new Address("Hovedgaden", "7", 1, "tv", "5230", "odense M", "hkdhkfjskf"),
-                            new Address("Hovedgaden", "7", 2, "tv", "5230", "odense M", "hkdhkfjskf"),
-                            new Address("Hovedgaden", "7", 3, "th", "5230", "odense M", "hkdhkfjskf"),
-                            new Address("Hovedgaden", "7", 3, "tv", "5230", "odense M", "hkdhkfjskf"),
-                            new Address("Hovedgaden", "7", 4, "th", "5230", "odense M", "hkdhkfjskf"),
-                            new Address("Hovedgaden", "7", 4, "tv", "5230", "odense M", "hkdhkfjskf"),
-                            new Address("Hovedgaden", "7", 1, "th", "5230", "odense M", "hkdhkfjskf")
+                            new Address("Hovedgaden", "7", "1", "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", "2", "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", "3", "th", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", "3", "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", "4", "th", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", "4", "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", "1", "th", "5230", "odense M", "hkdhkfjskf")
                         }
                     },
 
@@ -122,27 +122,27 @@ namespace EmergencyResponseTest
 
         public static IEnumerable<Object[]> GetAddressesForAddressSearch()
         {
-            return new List<object[]> { 
+            return new List<object[]> {
             new object[] {
-                new Address("Æblevej", "15", 1, "b", "5000", "odense C"),
+                new Address("Æblevej", "15", "1", "b", "5000", "odense C"),
                 new List<Address> {
-                    new Address("Æblevej", "15", 1, "a", "5000", "odense C", "nnkdnvkdn"),
-                    new Address("Æblevej", "15", 1, "c", "5000", "odense C", "joidsdlksjls"),
-                    new Address("Æblevej", "15", 2, "a", "5000", "odense C", "eksknfkskf"),
-                    new Address("Æblevej", "15", 2, "b", "5000", "odense C", "skjekskjf"),
-                    new Address("Æblevej", "15", 2, "c", "5000", "odense C", "ldgjrigdl")
+                    new Address("Æblevej", "15", "1", "a", "5000", "odense C", "nnkdnvkdn"),
+                    new Address("Æblevej", "15", "1", "c", "5000", "odense C", "joidsdlksjls"),
+                    new Address("Æblevej", "15", "2", "a", "5000", "odense C", "eksknfkskf"),
+                    new Address("Æblevej", "15", "2", "b", "5000", "odense C", "skjekskjf"),
+                    new Address("Æblevej", "15", "2", "c", "5000", "odense C", "ldgjrigdl")
                 }
             },
             new object[] {
                 new Address("Hovedgaden", "7", null, null, "5230", "odense M"),
                 new List<Address> {
-                    new Address("Hovedgaden", "7", 1, "th", "5230", "odense M", "hkdhkfjskf"),
-                    new Address("Hovedgaden", "7", 1, "tv", "5230", "odense M", "hkdhkfjskf"),
-                    new Address("Hovedgaden", "7", 2, "tv", "5230", "odense M", "hkdhkfjskf"),
-                    new Address("Hovedgaden", "7", 3, "th", "5230", "odense M", "hkdhkfjskf"),
-                    new Address("Hovedgaden", "7", 3, "tv", "5230", "odense M", "hkdhkfjskf"),
-                    new Address("Hovedgaden", "7", 4, "th", "5230", "odense M", "hkdhkfjskf"),
-                    new Address("Hovedgaden", "7", 4, "tv", "5230", "odense M", "hkdhkfjskf")
+                    new Address("Hovedgaden", "7", "1", "th", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", "1", "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", "2", "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", "3", "th", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", "3", "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", "4", "th", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", "4", "tv", "5230", "odense M", "hkdhkfjskf")
                 }
             },
             new object[] {
