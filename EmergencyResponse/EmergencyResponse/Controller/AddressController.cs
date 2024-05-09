@@ -53,7 +53,7 @@ namespace EmergencyResponse.Controller
             throw new NotImplementedException();
         }
 
-        public async Task<List<Address>> SearchAddress(AddressDTO address)
+        public async Task<List<AddressDTO>> SearchAddress(AddressDTO address)
         {
             var floorValue = address.Floor == null ? "" : address.Floor.ToString();
             var doorValue = address.Door == null ? "" : address.Door;
@@ -64,7 +64,7 @@ namespace EmergencyResponse.Controller
                 $"{doorValue}&struktur=mini";
             var response = await _httpClient.GetAsync(URL);
             var obj = JsonSerializer.Deserialize<List<JsonElement>>(response.Content.ReadAsStream());
-            List<Address> result = new List<Address>();
+            List<AddressDTO> result = new List<AddressDTO>();
             foreach (var item in obj)
             {
                 var streetname = item.GetProperty("vejnavn").GetString();
@@ -76,7 +76,8 @@ namespace EmergencyResponse.Controller
                 item.TryGetProperty("etage", out var doorProperty);
                 string door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
                 var addressId = item.GetProperty("id").GetString();
-                result.Add(new(streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId));
+                var returnAddress = new Address(streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId);
+                result.Add(new AddressDTO(returnAddress));
             }
             return result;
         }
