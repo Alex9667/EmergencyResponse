@@ -73,7 +73,7 @@ namespace EmergencyResponse.Controller
                 var postalCodeName = item.GetProperty("postnrnavn").GetString();
                 item.TryGetProperty("etage", out var floorProperty);
                 string? floor = floorProperty.ValueKind == JsonValueKind.Null ? null : floorProperty.GetString();
-                item.TryGetProperty("etage", out var doorProperty);
+                item.TryGetProperty("dør", out var doorProperty);
                 string door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
                 var addressId = item.GetProperty("id").GetString();
                 var returnAddress = new Address(streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId);
