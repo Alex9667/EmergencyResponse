@@ -4,50 +4,84 @@
 @using EmergencyResponse.Controller
 
 <h3>Søg efter adresse</h3>
-
-<div>
-    <h2>Address Details</h2>
-    <form @onsubmit="SearchAddress">
+<h2>Address Details</h2>
+<div style ="display: flex;">
+    <div style="flex: 1;">
         <div>
-            <label for="street">Vejnavn:</label>
-            <input type="text" id="street" name="street" @bind="address.StreetName" />
+            <form @onsubmit="SearchAddress">
+                <div>
+                    <label for="street">Vejnavn:</label>
+                    <input type="text" id="street" name="street" @bind="searchAddress.StreetName" />
+                </div>
+                <div>
+                    <label for="houseNumber">Husnummer:</label>
+                    <input type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
+                </div>
+                <div>
+                    <label for="postalCode">Postnummer:</label>
+                    <input type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
+                </div>
+                <div>
+                    <label for="postalCodeName">By:</label>
+                    <input type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
+                </div>
+                <div>
+                    <label for="floor">Etage:</label>
+                    <input type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
+                </div>
+                <div>
+                    <label for="door">Dør:</label>
+                    <input type="text" id="door" name="door" @bind="searchAddress.Door" />
+                </div>
+                <button type="submit" >Submit</button>
+            </form>
         </div>
         <div>
-            <label for="houseNumber">Husnummer:</label>
-            <input type="text" id="houseNumber" name="houseNumber" @bind="address.HouseNumber" />
+        @if (possibleAddresses.Count > 0)
+        {
+            <p>Vælg den rigtige adresse</p>
+            <ul>
+                @foreach (var address in possibleAddresses)
+                {
+                    <li class="list-item" @onclick="() => SelectAddress(address)">
+                        @address.StreetName @address.HouseNumber
+                        @address.PostalCode @address.PostalCodeName
+                    </li>
+                }
+            </ul>
+        }
         </div>
-        <div>
-            <label for="postalCode">Postnummer:</label>
-            <input type="text" id="postalCode" name="postalCode" @bind="address.PostalCode" />
-        </div>
-        <div>
-            <label for="postalCodeName">By:</label>
-            <input type="text" id="postalCodeName" name="postalCodeName" @bind="address.PostalCodeName" />
-        </div>
-        <div>
-            <label for="floor">Etage:</label>
-            <input type="text" id="floor" name="floor" @bind="address.Floor" />
-        </div>
-        <div>
-            <label for="door">Dør:</label>
-            <input type="text" id="door" name="door" @bind="address.Door" />
-        </div>
-        <button type="submit" >Submit</button>
-    </form>
+    </div>
+    <div style="flex: 1;">
+    </div>
 </div>
+
+<style>
+    .list-item {
+        list-style-type: none; /* Remove bullet points */
+        padding: 10px; /* Add padding */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+
+    .list-item:hover {
+        background-color: lightgray; /* Change background color on hover */
+    }
+</style>
 
 @code {
     public AddressDTO address = new AddressDTO();
+    public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
+    public AddressDTO selectedAddress = new AddressDTO();
 
     public async Task SearchAddress()
     {
         var httpClient = new HttpClient();
         var addressController = new AddressController(httpClient);
-        var result = await addressController.SearchAddress(address);
-        if (result.Count > 0)
-        {
-            var hi = result[0].StreetName;
-            
-        }
+        possibleAddresses = await addressController.SearchAddress(searchAddress);
+    }
+    public void SelectAddress(AddressDTO address)
+    {
+        selectedAddress = address;
+        possibleAddresses.Clear();
     }
 }
