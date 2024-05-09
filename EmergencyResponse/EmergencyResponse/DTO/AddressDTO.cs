@@ -1,4 +1,6 @@
-﻿namespace EmergencyResponse.DTO
+﻿using EmergencyResponse.Model;
+
+namespace EmergencyResponse.DTO
 {
     public class AddressDTO
     {
@@ -10,5 +12,18 @@
         public string PostalCodeName { get; set; }
         public string? AddressId { get; set; }
 
+        public AddressDTO(Address address)
+        {
+            StreetName = address.StreetName;
+            HouseNumber = address.HouseNumber;
+            Floor = address.Floor;
+            Door = address.Door;
+            PostalCode = address.PostalCode;
+            PostalCodeName = address.PostalCodeName;
+        }
+
+        public AddressDTO()
+        {
+        }
     }
 }
