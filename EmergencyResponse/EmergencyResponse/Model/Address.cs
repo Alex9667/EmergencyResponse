@@ -10,6 +10,8 @@
         public string PostalCode { get; private set; }
         public string PostalCodeName { get; private set; }
         public string? AddressId { get; private set; }
+        public double? Latitude { get; private set; }
+        public double? Longitude { get; private set; }
 
         public Address(string id, string streetName, string houseNumber, int? floor, string door, string postalCode, string postalCodeName)
         {
@@ -30,6 +32,26 @@
             }
 
             AddressId = addressId ?? throw new ArgumentNullException(nameof(addressId), "AddressId cannot be null.");
+        }
+
+        public void SetLatitude(double? latitude)
+        {
+            if (Latitude != null)
+            {
+                throw new InvalidOperationException("Latitude can only be set once.");
+            }
+
+            Latitude = latitude ?? throw new ArgumentNullException(nameof(latitude), "Latitude cannot be null.");
+        }
+
+        public void SetLongitude(double? longitude)
+        {
+            if (Longitude != null)
+            {
+                throw new InvalidOperationException("Longitude can only be set once.");
+            }
+
+            Longitude = longitude ?? throw new ArgumentNullException(nameof(longitude), "Longitude cannot be null.");
         }
     }
 }
