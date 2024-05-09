@@ -32,7 +32,7 @@ namespace EmergencyResponse.Controller
             return null;
         }
 
-        public object CreateAddress(string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
+        public object CreateAddress(string streetName, string houseNumber, string? floor, string? door, string postalCode, string postalCodeName, string addressId)
         {
             return new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
         }
@@ -72,7 +72,7 @@ namespace EmergencyResponse.Controller
                 var postalCode = item.GetProperty("postnr").GetString();
                 var postalCodeName = item.GetProperty("postnrnavn").GetString();
                 item.TryGetProperty("etage", out var floorProperty);
-                int? floor = floorProperty.ValueKind == JsonValueKind.Null ? null : int.Parse(floorProperty.GetString()!);
+                string? floor = floorProperty.ValueKind == JsonValueKind.Null ? null : floorProperty.GetString();
                 item.TryGetProperty("etage", out var doorProperty);
                 string door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
                 var addressId = item.GetProperty("id").GetString();

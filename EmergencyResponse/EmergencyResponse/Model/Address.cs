@@ -4,7 +4,7 @@
     {
         public string StreetName { get; private set; }
         public string HouseNumber { get; private set; }
-        public int? Floor { get; private set; }
+        public string? Floor { get; private set; }
         public string? Door { get; private set; }
         public string PostalCode { get; private set; }
         public string PostalCodeName { get; private set; }
@@ -12,7 +12,7 @@
         public double? Latitude { get; private set; }
         public double? Longitude { get; private set; }
 
-        public Address(string streetName, string houseNumber, int? floor, string? door, string postalCode, string? postalCodeName, string? addressId = null)
+        public Address(string streetName, string houseNumber, string? floor, string? door, string postalCode, string? postalCodeName, string? addressId = null)
         {
             StreetName = streetName ?? throw new ArgumentNullException(nameof(streetName), "StreetName cannot be null.");
             HouseNumber = houseNumber ?? throw new ArgumentNullException(nameof(houseNumber), "HouseNumber cannot be null.");

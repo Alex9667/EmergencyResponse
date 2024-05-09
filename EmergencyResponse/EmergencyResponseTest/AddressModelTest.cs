@@ -5,7 +5,7 @@ namespace EmergencyResponseTest
 {
     public class AddressModelTest
     {
-       // [TestClass]
+        // [TestClass]
         public class APIValidatorTests
         {
             // private APIValidator _validator;
@@ -19,7 +19,7 @@ namespace EmergencyResponseTest
 
             [Theory]
             [InlineData("Oak Avenue", "1011", null, "D", "13579", "City D")]
-            public void AddressProperties_ShouldMatchInputValues(string streetName, string houseNumber, int? floor, string door,
+            public void AddressProperties_ShouldMatchInputValues(string streetName, string houseNumber, string? floor, string door,
                 string postalCode, string postalCodeName)
             {
                 // Act
@@ -44,7 +44,7 @@ namespace EmergencyResponseTest
             }
 
             [Theory, MemberData(nameof(GetAddressData))]
-            public void AddressConstructor_WithNullValuesForNonNullableProperties_ShouldThrowArgumentNullException(string streetName, string houseNumber, int? floor, string door,
+            public void AddressConstructor_WithNullValuesForNonNullableProperties_ShouldThrowArgumentNullException(string streetName, string houseNumber, string? floor, string door,
                 string postalCode, string postalCodeName)
             {
                 // Act

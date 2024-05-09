@@ -26,7 +26,7 @@ else
     private async Task FetchAddress()
     {
         // Example address query, replace with dynamic data if needed
-        Address queryAddress = new Address("Rødegårdsvej", "98C", 3, "th", "5000", "Odense C");
+        Address queryAddress = new Address("Rødegårdsvej", "98C", "3", "th", "5000", "Odense C");
         address = await DataforsyningService.GetAddressAsync(queryAddress);
     }
 }

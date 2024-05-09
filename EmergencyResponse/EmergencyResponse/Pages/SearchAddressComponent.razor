@@ -53,6 +53,15 @@
         </div>
     </div>
     <div style="flex: 1;">
+        @if(selectedAddress != null)
+        {
+            <p>Vælg hvad du gør nu</p>
+            @selectedAddress.StreetName
+            <button>
+                Få omkringliggende ejendomme
+            </button>
+            
+        }
     </div>
 </div>
 
@@ -68,10 +77,10 @@
     }
 </style>
 
-@code {
+    @code {
     public AddressDTO searchAddress = new AddressDTO();
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
-    public AddressDTO selectedAddress = new AddressDTO();
+    public AddressDTO selectedAddress;
 
     public async Task SearchAddress()
     {
