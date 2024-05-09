@@ -1,4 +1,5 @@
 ﻿@page "/searchAddress"
+@using EmergencyResponse.DTO
 @using EmergencyResponse.Model
 @using EmergencyResponse.Controller
 
@@ -68,9 +69,9 @@
 </style>
 
 @code {
-    public Address searchAddress = new Address();
-    public List<Address> possibleAddresses = new List<Address>();
-    public Address selectedAddress = new Address();
+    public AddressDTO address = new AddressDTO();
+    public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
+    public AddressDTO selectedAddress = new AddressDTO();
 
     public async Task SearchAddress()
     {
@@ -78,7 +79,7 @@
         var addressController = new AddressController(httpClient);
         possibleAddresses = await addressController.SearchAddress(searchAddress);
     }
-    public void SelectAddress(Address address)
+    public void SelectAddress(AddressDTO address)
     {
         selectedAddress = address;
         possibleAddresses.Clear();

@@ -9,6 +9,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
+using EmergencyResponse.DTO;
 
 namespace EmergencyResponse.Controller
 {
@@ -31,9 +32,9 @@ namespace EmergencyResponse.Controller
             return null;
         }
 
-        public object CreateAddress(string id, string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
+        public object CreateAddress(string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
         {
-            return new Address(id, streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
+            return new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
         }
 
 
@@ -52,7 +53,7 @@ namespace EmergencyResponse.Controller
             throw new NotImplementedException();
         }
 
-        public async Task<List<Address>> SearchAddress(Address address)
+        public async Task<List<Address>> SearchAddress(AddressDTO address)
         {
             var floorValue = address.Floor == null ? "" : address.Floor.ToString();
             var doorValue = address.Door == null ? "" : address.Door;
@@ -75,14 +76,14 @@ namespace EmergencyResponse.Controller
                 item.TryGetProperty("etage", out var doorProperty);
                 string door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
                 var addressId = item.GetProperty("id").GetString();
-                result.Add(new("id", streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId));
+                result.Add(new(streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId));
             }
             return result;
         }
         public async Task<int> GetAddressBFE(string address)
         {
             string bfeStepOne = await _httpClient.GetStringAsync("https://api.dataforsyningen.dk/adresser?q=" + address + "&struktur=mini");
-            string id;
+            string addressId;
 
             // Parse the JSON string into a JsonDocument
             using (JsonDocument doc = JsonDocument.Parse(bfeStepOne))
@@ -94,10 +95,10 @@ namespace EmergencyResponse.Controller
                 JsonElement firstElement = root[0];
 
                 // Get the id property
-                id = firstElement.GetProperty("id").GetString();
+                addressId = firstElement.GetProperty("id").GetString();
             }
 
-            string bfeStepTwo = await _httpClient.GetStringAsync("https://services.datafordeler.dk/DAR/DAR/2.0.0/rest/adresse?id=" + id + "&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024");
+            string bfeStepTwo = await _httpClient.GetStringAsync("https://services.datafordeler.dk/DAR/DAR/2.0.0/rest/adresse?id=" + addressId + "&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024");
             string landPiece;
 
             using (JsonDocument doc = JsonDocument.Parse(bfeStepTwo))
@@ -125,10 +126,5 @@ namespace EmergencyResponse.Controller
     }
 
     // Root myDeserializedClass = JsonConvert.DeserializeObject<List<Root>>(myJsonResponse);
-    public class AddressId
-    {
-        public string id { get; set; }
-        // Add other properties as needed
-    }
 
 }

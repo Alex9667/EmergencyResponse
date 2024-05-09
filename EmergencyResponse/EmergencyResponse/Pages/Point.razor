@@ -1,0 +1,32 @@
+﻿@page "/point"
+@using EmergencyResponse.Model
+@using EmergencyResponse.ExternalServices
+@using EmergencyResponse.ExternalServices.Interfaces
+@inject IDataforsyningService DataforsyningService
+
+<PageTitle>Point</PageTitle>
+
+<h1>Point</h1>
+
+@if (address != null)
+{
+    <p>Address: @address.StreetName @address.HouseNumber, @address.PostalCode @address.PostalCodeName</p>
+    <p>Coordinates: Latitude @address.Latitude, Longitude @address.Longitude</p>
+}
+else
+{
+    <p>Click the button to fetch an address.</p>
+}
+
+<button class="btn btn-primary" @onclick="FetchAddress">Fetch Address</button>
+
+@code {
+    private Address address;
+
+    private async Task FetchAddress()
+    {
+        // Example address query, replace with dynamic data if needed
+        Address queryAddress = new Address("Rødegårdsvej", "98C", 3, "th", "5000", "Odense C");
+        address = await DataforsyningService.GetAddressAsync(queryAddress);
+    }
+}

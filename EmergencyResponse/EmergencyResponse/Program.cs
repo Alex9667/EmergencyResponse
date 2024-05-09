@@ -1,3 +1,6 @@
+using EmergencyResponse.ExternalServices;
+using EmergencyResponse.ExternalServices.Interfaces;
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using EmergencyResponse.Model;
@@ -9,6 +12,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 
+
+// Register DataforsyningenService with HttpClient
+builder.Services.AddHttpClient<IDataforsyningService, DataforsyningenService>(client =>
+{
+    // Optionally configure the client here if needed
+    client.BaseAddress = new Uri("https://api.dataforsyningen.dk/");
+});
 
 var app = builder.Build();
 
