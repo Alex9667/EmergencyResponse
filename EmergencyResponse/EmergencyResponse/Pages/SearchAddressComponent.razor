@@ -1,4 +1,5 @@
 ﻿@page "/searchAddress"
+@using EmergencyResponse.DTO
 @using EmergencyResponse.Model
 @using EmergencyResponse.Controller
 
@@ -36,7 +37,7 @@
 </div>
 
 @code {
-    public Address address = new Address();
+    public AddressDTO address = new AddressDTO();
 
     public async Task SearchAddress()
     {

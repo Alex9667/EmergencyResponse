@@ -20,7 +20,7 @@ namespace EmergencyResponseTest
             _addressRepo = new AddressRepo();
             _addressRepoMock = new Mock<IAddressRepo>();
 
-            Address address = new("askda-2daskdl-209j", "Bornholmvej", "21A", 1, "5", "7892", "Bornholm");
+            Address address = new("Bornholmvej", "21A", 1, "5", "7892", "Bornholm");
 
             _addressRepoMock.Setup(x => x.GetAddress("Bornholmvej 21A")).Returns(address);
         }
@@ -36,9 +36,9 @@ namespace EmergencyResponseTest
         [Fact]
         public void UpdateAddress_ShouldChangeAddressProperties()
         {
-            Address oldAddress = new("askda-2daskdl-209j", "Bornholmvej", "21A", 1, "5", "7892", "Bornholm");
+            Address oldAddress = new("Bornholmvej", "21A", 1, "5", "7892", "Bornholm");
 
-            Address newAddress = _addressRepo.UpdateAddress(oldAddress.Id, "Nygade", oldAddress.HouseNumber, oldAddress.Floor,
+            Address newAddress = _addressRepo.UpdateAddress("Nygade", oldAddress.HouseNumber, oldAddress.Floor,
                                                             oldAddress.Door, oldAddress.PostalCode, oldAddress.PostalCodeName);
 
             newAddress.Should().NotBe(oldAddress);

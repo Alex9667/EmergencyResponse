@@ -18,15 +18,14 @@ namespace EmergencyResponseTest
             }*/
 
             [Theory]
-            [InlineData("0a31asdac-2mnsb-3218-e042-0003ba293131", "Oak Avenue", "1011", null, "D", "13579", "City D")]
-            public void AddressProperties_ShouldMatchInputValues(string id, string streetName, string houseNumber, int? floor, string door,
+            [InlineData("Oak Avenue", "1011", null, "D", "13579", "City D")]
+            public void AddressProperties_ShouldMatchInputValues(string streetName, string houseNumber, int? floor, string door,
                 string postalCode, string postalCodeName)
             {
                 // Act
-                var address = new Address(id, streetName, houseNumber, floor, door, postalCode, postalCodeName);
+                var address = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName);
 
                 // Assert
-                Assert.Equal(id, address.Id);
                 Assert.Equal(streetName, address.StreetName);
                 Assert.Equal(houseNumber, address.HouseNumber);
                 Assert.Equal(floor, address.Floor);
@@ -45,11 +44,11 @@ namespace EmergencyResponseTest
             }
 
             [Theory, MemberData(nameof(GetAddressData))]
-            public void AddressConstructor_WithNullValuesForNonNullableProperties_ShouldThrowArgumentNullException(string id, string streetName, string houseNumber, int? floor, string door,
+            public void AddressConstructor_WithNullValuesForNonNullableProperties_ShouldThrowArgumentNullException(string streetName, string houseNumber, int? floor, string door,
                 string postalCode, string postalCodeName)
             {
                 // Act
-                Action action = () => new Address(id, streetName, houseNumber, floor, door, postalCode, postalCodeName);
+                Action action = () => new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName);
 
                 // Assert
                 Assert.Throws<ArgumentNullException>(action);
@@ -59,7 +58,7 @@ namespace EmergencyResponseTest
             public void SetAddressId_WhenCalledFirstTime_SetsTheAddressId()
             {
                 // Arrange
-                var address = new Address("id", "streetName", "houseNumber", null, "door", "postalCode", "postalCodeName");
+                var address = new Address("streetName", "houseNumber", null, "door", "postalCode", "postalCodeName");
                 var addressId = "newAddressId";
 
                 // Act
@@ -74,7 +73,7 @@ namespace EmergencyResponseTest
             public void SetAddressId_ForTheSecondTime_ThrowsInvalidOperationException()
             {
                 // Arrange
-                var address = new Address("id", "streetName", "houseNumber", null, "door", "postalCode", "postalCodeName");
+                var address = new Address("streetName", "houseNumber", null, "door", "postalCode", "postalCodeName");
                 address.SetAddressId("firstUniqueId"); // First time setting AddressId
 
                 // Act
@@ -89,7 +88,7 @@ namespace EmergencyResponseTest
             public void SetAddressId_FailureScenarios_ThrowsExpectedException(string AddressId, Type expectedException, string expectedMessage)
             {
                 // Arrange
-                var address = new Address("id", "streetName", "houseNumber", null, "door", "postalCode", "postalCodeName");
+                var address = new Address("streetName", "houseNumber", null, "door", "postalCode", "postalCodeName");
 
                 // Act
                 Action act = () => address.SetAddressId(AddressId);

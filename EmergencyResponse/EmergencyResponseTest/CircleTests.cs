@@ -13,16 +13,16 @@ namespace EmergencyResponseTest
     {
         public static IEnumerable<object[]> AddressData()
         {
-            var validAddress = new Address("1", "Main Street", "123", null, null, "12345", "SmallTown");
+            var validAddress = new Address("Main Street", "123", null, null, "12345", "SmallTown");
             validAddress.SetLatitude(34.0522);
             validAddress.SetLongitude(-118.2437);
             yield return new object[] { validAddress, false, null};
 
-            var addressMissingLat = new Address("2", "Second Street", "456", null, null, "67890", "BigTown");
+            var addressMissingLat = new Address("Second Street", "456", null, null, "67890", "BigTown");
             addressMissingLat.SetLongitude(-118.2437);  // Only longitude is set
             yield return new object[] { addressMissingLat, true, "Address must have both latitude and longitude set." };
 
-            var addressMissingLon = new Address("3", "Third Street", "789", null, null, "54321", "MidTown");
+            var addressMissingLon = new Address("Third Street", "789", null, null, "54321", "MidTown");
             addressMissingLon.SetLatitude(34.0522);  // Only latitude is set
             yield return new object[] { addressMissingLon, true, "Address must have both latitude and longitude set." };
         }

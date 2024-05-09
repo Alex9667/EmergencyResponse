@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using Moq.Protected;
 using System.Text.Json;
 using System.Net.Http;
+using EmergencyResponse.DTO;
 
 namespace EmergencyResponseTest
 {
@@ -28,40 +29,21 @@ namespace EmergencyResponseTest
         }
 
         [Theory]
-        [InlineData("{\"Id\":\"1\", \"StreetName\":\"æblevej\", \"HouseNumber\":\"15\", \"Floor\":1, \"Door\":\"b\", \"PostalCode\":\"5000\", \"PostalCodeName\": \"odense C\", \"AddressId\": \"khskhkshfdjflacoope\"}", "1", "æblevej", "15", 1, "b", "5000", "odense C", "khskhkshfdjflacoope")]
-        public void AddressController_CreateAddress_FromString_ShouldReturnCreatedAddress(string json, string id, string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
+        [InlineData("{\"StreetName\":\"æblevej\", \"HouseNumber\":\"15\", \"Floor\":1, \"Door\":\"b\", \"PostalCode\":\"5000\", \"PostalCodeName\": \"odense C\", \"AddressId\": \"khskhkshfdjflacoope\"}", "æblevej", "15", 1, "b", "5000", "odense C", "khskhkshfdjflacoope")]
+        public void AddressController_CreateAddress_FromString_ShouldReturnCreatedAddress(string json, string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
         {
-            var result = new Address
-            {
-                Id = id,
-                StreetName = streetName,
-                HouseNumber = houseNumber,
-                Floor = floor,
-                Door = door,
-                PostalCode = postalCode,
-                PostalCodeName = postalCodeName,
-                AddressId = addressId
-            };
+            var result = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
             var address = _addressController.CreateAddress(json);
             address.Should().BeEquivalentTo(result);
         }
 
         [Theory]
-        [InlineData("1", "æblevej", "15", 1, "b", "5000", "odense C", "khskhkshfdjflacoope")]
-        public void AddressController_CreateAddress_FromValues_ShouldReturnCreatedAddress(string id, string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
+        [InlineData("æblevej", "15", 1, "b", "5000", "odense C", "khskhkshfdjflacoope")]
+        public void AddressController_CreateAddress_FromValues_ShouldReturnCreatedAddress(string streetName, string houseNumber, int? floor, string? door, string postalCode, string postalCodeName, string addressId)
         {
-            var result = new Address
-            {
-                Id = id,
-                StreetName = streetName,
-                HouseNumber = houseNumber,
-                Floor = floor,
-                Door = door,
-                PostalCode = postalCode,
-                PostalCodeName = postalCodeName,
-                AddressId = addressId
-            };
-            var address = _addressController.CreateAddress(id, streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
+            var result = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
+
+            var address = _addressController.CreateAddress(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
             address.Should().BeEquivalentTo(result);
         }
 
@@ -84,7 +66,7 @@ namespace EmergencyResponseTest
 
         [Theory]
         [MemberData(nameof(GetAddressesForAddressSearch))]
-        public async void AddressController_SearchAddress_ShouldReturnListOfPossibleAddresses(Address address, List<Address> returnedAddresses)
+        public async void AddressController_SearchAddress_ShouldReturnListOfPossibleAddresses(AddressDTO address, List<Address> returnedAddresses)
         {
             var expectedResponse = JsonSerializer.Serialize(returnedAddresses);
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -107,28 +89,28 @@ namespace EmergencyResponseTest
             return new List<object[]>
             {
                 new object[] {
-                    new Address {Id="1", StreetName="Æblevej", HouseNumber="15", Floor=1, Door="b", PostalCode="5000", PostalCodeName="odense C", AddressId="hkdhkfjskf"},
+                    new Address("Æblevej", "15", 1, "b", "5000", "odense C", "hkdhkfjskf"),
                     new List<Address> {
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=1, Door="a", PostalCode="5000", PostalCodeName="odense C", AddressId="nnkdnvkdn" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=1, Door="c", PostalCode="5000", PostalCodeName="odense C", AddressId="joidsdlksjls" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=2, Door="a", PostalCode="5000", PostalCodeName="odense C", AddressId="eksknfkskf" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=2, Door="b", PostalCode="5000", PostalCodeName="odense C", AddressId="skjekskjf" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=2, Door="c", PostalCode="5000", PostalCodeName="odense C", AddressId="ldgjrigdl" }
-                    }
-                },
-                new object[] {
-                    new Address {Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=2, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf"},
-                    new List<Address> {
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=1, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=1, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=2, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=3, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=3, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=4, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=4, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" }
-                    }
-                },
+                        new Address("Æblevej", "15", 1, "a", "5000", "odense C", "nnkdnvkdn"),
+                        new Address("Æblevej", "15", 1, "c", "5000", "odense C", "joidsdlksjls"),
+                        new Address("Æblevej", "15", 2, "a", "5000", "odense C", "eksknfkskf"),
+                        new Address("Æblevej", "15", 2, "b", "5000", "odense C", "skjekskjf"),
+                        new Address("Æblevej", "15", 2, "c", "5000", "odense C", "ldgjrigdl")
+                    },
+                    new object[] {
+                        new Address("Hovedgaden", "7", 2, "th", "5230", "odense M", "hkdhkfjskf"),
+                        new List<Address> {
+                            new Address("Hovedgaden", "7", 1, "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", 2, "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", 3, "th", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", 3, "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", 4, "th", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", 4, "tv", "5230", "odense M", "hkdhkfjskf"),
+                            new Address("Hovedgaden", "7", 1, "th", "5230", "odense M", "hkdhkfjskf")
+                        }
+                    },
 
+                }
             };
         }
 
@@ -140,38 +122,36 @@ namespace EmergencyResponseTest
 
         public static IEnumerable<Object[]> GetAddressesForAddressSearch()
         {
-            return new List<object[]>
-            {
-                new object[] {
-                    new Address {Id="1", StreetName="Æblevej", HouseNumber="15", Floor=1, Door="b", PostalCode="5000", PostalCodeName="odense C"},
-                    new List<Address> {
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=1, Door="a", PostalCode="5000", PostalCodeName="odense C", AddressId="nnkdnvkdn" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=1, Door="c", PostalCode="5000", PostalCodeName="odense C", AddressId="joidsdlksjls" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=2, Door="a", PostalCode="5000", PostalCodeName="odense C", AddressId="eksknfkskf" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=2, Door="b", PostalCode="5000", PostalCodeName="odense C", AddressId="skjekskjf" },
-                        new Address{Id="1", StreetName="Æblevej", HouseNumber="15", Floor=2, Door="c", PostalCode="5000", PostalCodeName="odense C", AddressId="ldgjrigdl" }
-                    }
-                },
-                new object[] {
-                    new Address {Id="1", StreetName="Hovedgaden", HouseNumber="7", PostalCode="5230", PostalCodeName="odense M"},
-                    new List<Address> {
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=1, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=1, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=2, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=3, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=3, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=4, Door="th", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                        new Address{Id="1", StreetName="Hovedgaden", HouseNumber="7", Floor=4, Door="tv", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" }
-                    }
-                },
-                new object[] {
-                    new Address {Id="1", StreetName="Mellemvej", HouseNumber="7", PostalCode="5230", PostalCodeName="odense M"},
-                    new List<Address> {
-                        new Address{Id="1", StreetName="Mellemvej", HouseNumber="7", PostalCode="5230", PostalCodeName="odense M", AddressId="hkdhkfjskf" },
-                    }
-                },
-
-            };
+            return new List<object[]> { 
+            new object[] {
+                new Address("Æblevej", "15", 1, "b", "5000", "odense C"),
+                new List<Address> {
+                    new Address("Æblevej", "15", 1, "a", "5000", "odense C", "nnkdnvkdn"),
+                    new Address("Æblevej", "15", 1, "c", "5000", "odense C", "joidsdlksjls"),
+                    new Address("Æblevej", "15", 2, "a", "5000", "odense C", "eksknfkskf"),
+                    new Address("Æblevej", "15", 2, "b", "5000", "odense C", "skjekskjf"),
+                    new Address("Æblevej", "15", 2, "c", "5000", "odense C", "ldgjrigdl")
+                }
+            },
+            new object[] {
+                new Address("Hovedgaden", "7", null, null, "5230", "odense M"),
+                new List<Address> {
+                    new Address("Hovedgaden", "7", 1, "th", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", 1, "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", 2, "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", 3, "th", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", 3, "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", 4, "th", "5230", "odense M", "hkdhkfjskf"),
+                    new Address("Hovedgaden", "7", 4, "tv", "5230", "odense M", "hkdhkfjskf")
+                }
+            },
+            new object[] {
+                new Address("Mellemvej", "7", null, null, "5230", "odense M"),
+                new List<Address> {
+                    new Address("Mellemvej", "7", null, null, "5230", "odense M", "hkdhkfjskf"),
+                }
+            },
+        };
 
             //Address address = _addressController.GetAddress();
             //address.Should().NotBeNull();   
