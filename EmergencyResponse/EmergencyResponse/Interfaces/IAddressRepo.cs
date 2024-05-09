@@ -8,7 +8,7 @@ namespace EmergencyResponse.Interfaces
 
         public Address GetAddress(string address);
 
-        public Address UpdateAddress(string streetName, string houseNumber, int? floor, string door,
+        public Address UpdateAddress(string streetName, string houseNumber, string? floor, string door,
                 string postalCode, string postalCodeName);
 
         public void DeleteAddress();
