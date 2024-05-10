@@ -5,9 +5,9 @@
 
 <h3>Søg efter adresse</h3>
 <h2>Address Details</h2>
-<div style ="display: flex;">
-    <div style="flex: 1;">
-        <div>
+<div style="display: flex;">
+    <div class="container">
+        <div class="input-wrapper">
             <form @onsubmit="SearchAddress">
                 <div>
                     <label for="street">Vejnavn:</label>
@@ -33,37 +33,56 @@
                     <label for="door">Dør:</label>
                     <input type="text" id="door" name="door" @bind="searchAddress.Door" />
                 </div>
-                <button type="submit" >Submit</button>
+                <button type="submit">Submit</button>
             </form>
         </div>
-        <div>
         @if (possibleAddresses.Count > 0)
         {
             <p>Vælg den rigtige adresse</p>
-            <ul>
-                @foreach (var address in possibleAddresses)
-                {
-                    <li class="list-item" @onclick="() => SelectAddress(address)">
-                        @address.StreetName @address.HouseNumber
-                        @address.PostalCode @address.PostalCodeName
-                    </li>
-                }
-            </ul>
+            <div class="table-container" id="tableContainer">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>BFE</th>
+                            <th>StreetName</th>
+                            <th>HouseNumber</th>
+                            <th>Floor</th>
+                            <th>Door</th>
+                            <th>PostalCode</th>
+                            <th>PostalCodeName</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var address in possibleAddresses)
+                        {
+                            <tr>
+                                <td>TEMP BFE</td>
+                                <td>@address.StreetName</td>
+                                <td>@address.HouseNumber</td>
+                                <td>@address.Floor</td>
+                                <td>@address.Door</td>
+                                <td>@address.PostalCode</td>
+                                <td>@address.PostalCodeName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
-        </div>
     </div>
     <div style="flex: 1;">
-        @if(selectedAddress != null)
+        @if (selectedAddress != null)
         {
             <p>Vælg hvad du gør nu</p>
             @selectedAddress.StreetName
             <button>
                 Få omkringliggende ejendomme
             </button>
-            
         }
     </div>
 </div>
+
+
 
 <style>
     .list-item {
@@ -75,9 +94,54 @@
     .list-item:hover {
         background-color: lightgray; /* Change background color on hover */
     }
+
+    .container {
+        display: flex;
+    }
+
+    .input-wrapper {
+        margin-right: 50px; /* Adjust spacing between input field and table */
+    }
+
+    .table-container {
+        border-radius: 15px;
+        overflow: hidden; /* Ensures rounded corners are visible */
+        flex: 1; /* Allow the table container to grow and fill available space */
+    }
+
+    .table {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .table td, .table th {
+        border: 1px solid #ededed;
+        padding: 8px;
+        color: white;
+    }
+
+    .table tr:nth-child(even) {
+        background-color: #302e2d;
+    }
+
+    .table tr {
+        background-color: #302e2d;
+    }
+
+        .table tr:hover {
+            background-color: #04AA6D;
+        }
+
+    .table th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #6e6a69;
+        color: white;
+    }
 </style>
 
-    @code {
+@code {
     public AddressDTO searchAddress = new AddressDTO();
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
     public AddressDTO selectedAddress;
