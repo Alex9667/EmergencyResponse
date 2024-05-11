@@ -33,23 +33,22 @@
                     <label for="door">Dør:</label>
                     <input class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
                 </div>
-                <button type="submit">Submit</button>
+                <button class="button" type="submit">Søg</button>
             </form>
         </div>
         @if (possibleAddresses.Count > 0)
         {
-            <p>Vælg den rigtige adresse</p>
             <div class="table-container" id="tableContainer">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>BFE</th>
-                            <th>StreetName</th>
-                            <th>HouseNumber</th>
-                            <th>Floor</th>
-                            <th>Door</th>
-                            <th>PostalCode</th>
-                            <th>PostalCodeName</th>
+                            <th>Vejnavn</th>
+                            <th>Husnummer</th>
+                            <th>Etage</th>
+                            <th>Dør</th>
+                            <th>Postnummer</th>
+                            <th>By</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,7 +74,7 @@
         {
             <p>Vælg hvad du gør nu</p>
             @selectedAddress.StreetName
-            <button>
+            <button class="button">
                 Få omkringliggende ejendomme
             </button>
         }
@@ -103,7 +102,7 @@
 
         /**
          * Udkommenteret da det tager meget lang tid at lave alle de kald for at få bfe nummeret. 
-         * Jeg er ikke sikekr på om alle BFE'er altid er der samme på hver søgning, så gemmer til senere./
+         * Jeg er ikke sikker på om alle BFE'er altid er de samme på hver søgning, så gemmer til senere./
         */
         //foreach (var address in possibleAddresses)
         //{
@@ -153,31 +152,31 @@
         overflow: hidden;
     }
 
-    .table td, .table th {
-        border: 1px solid #ededed;
-        padding: 8px;
-        color: white;
-    }
+        .table td, .table th {
+            border: 1px solid #ededed;
+            padding: 8px;
+            color: white;
+        }
 
-    .table tr:nth-child(even) {
-        background-color: #302e2d;
-    }
+        .table tr:nth-child(even) {
+            background-color: #302e2d;
+        }
 
-    .table tr {
-        background-color: #302e2d;
-    }
+        .table tr {
+            background-color: #302e2d;
+        }
 
-    .table tr:hover {
-        background-color: #04AA6D;
-    }
+        .table tr:hover {
+                background-color: #423F3E;
+        }
 
-    .table th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #6e6a69;
-        color: white;
-    }
+        .table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #6e6a69;
+            color: white;
+        }
 
     .input{
         width: 20%;
@@ -194,4 +193,30 @@
         color: white;
         text-align: center;
     }
+
+    .button {
+        display: inline-block;
+        padding: 5px 20px 10px;
+        font-size: 24px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #302e2d;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #6e6a69;
+        margin-top: 15px;
+    }
+
+        .button:hover {
+            background-color: #423F3E
+        }
+
+        .button:active {
+            background-color: #423F3E;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
 </style>
