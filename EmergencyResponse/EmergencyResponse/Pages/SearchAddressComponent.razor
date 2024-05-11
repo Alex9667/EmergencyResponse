@@ -8,30 +8,30 @@
 <div style="display: flex;">
     <div class="container">
         <div class="input-wrapper">
-            <form @onsubmit="SearchAddress">
+            <form @onsubmit="SearchAddress" class="input">
                 <div>
                     <label for="street">Vejnavn:</label>
-                    <input type="text" id="street" name="street" @bind="searchAddress.StreetName" />
+                    <input class="textInput" type="text" id="street" name="street" @bind="searchAddress.StreetName" />
                 </div>
                 <div>
                     <label for="houseNumber">Husnummer:</label>
-                    <input type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
+                    <input class="textInput" type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
                 </div>
                 <div>
                     <label for="postalCode">Postnummer:</label>
-                    <input type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
+                    <input class="textInput" type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
                 </div>
                 <div>
                     <label for="postalCodeName">By:</label>
-                    <input type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
+                    <input class="textInput" type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
                 </div>
                 <div>
                     <label for="floor">Etage:</label>
-                    <input type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
+                    <input class="textInput" type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
                 </div>
                 <div>
                     <label for="door">Dør:</label>
-                    <input type="text" id="door" name="door" @bind="searchAddress.Door" />
+                    <input class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
                 </div>
                 <button type="submit">Submit</button>
             </form>
@@ -56,7 +56,7 @@
                         @foreach (var address in possibleAddresses)
                         {
                             <tr @onclick="() => SelectAddress(address)">
-                                <td>TEMP BFE</td>
+                                <td>@address.BFE.ToString()</td>
                                 <td>@address.StreetName</td>
                                 <td>@address.HouseNumber</td>
                                 <td>@address.Floor</td>
@@ -89,14 +89,36 @@
 
     public async Task SearchAddress()
     {
+        selectedAddress = null;
         var httpClient = new HttpClient();
-        var addressController = new AddressController(httpClient);
+        AddressController addressController = new AddressController(httpClient);
         possibleAddresses = await addressController.SearchAddress(searchAddress);
+
+         int addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+
+        foreach (var address in possibleAddresses)
+            {
+            address.BFE = addressBFE;
+        }
+
+        /**
+         * Udkommenteret da det tager meget lang tid at lave alle de kald for at få bfe nummeret. 
+         * Jeg er ikke sikekr på om alle BFE'er altid er der samme på hver søgning, så gemmer til senere./
+        */
+        //foreach (var address in possibleAddresses)
+        //{
+        //    address.BFE = await addressController.GetAddressBFE($"{address.StreetName} {address.HouseNumber}");
+        //}
     }
     public void SelectAddress(AddressDTO address)
     {
-        selectedAddress = address;
-        possibleAddresses.Clear();
+        //Checking if any address is selected so the click event won't do aything in case one is selected
+        if(selectedAddress == null)
+        {
+            selectedAddress = address;
+            possibleAddresses.Clear();
+            possibleAddresses.Add(selectedAddress);
+        }
     }
 }
 
@@ -155,5 +177,21 @@
         text-align: left;
         background-color: #6e6a69;
         color: white;
+    }
+
+    .input{
+        width: 20%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .textInput{
+        border-radius: 15px;
+        background-color: #302e2d;
+        color: white;
+        text-align: center;
     }
 </style>

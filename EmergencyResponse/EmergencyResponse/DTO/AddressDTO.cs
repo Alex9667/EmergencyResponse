@@ -11,6 +11,7 @@ namespace EmergencyResponse.DTO
         public string PostalCode { get; set; }
         public string PostalCodeName { get; set; }
         public string? AddressId { get; set; }
+        public int? BFE { get; set; } = null;
 
         public AddressDTO(Address address)
         {
