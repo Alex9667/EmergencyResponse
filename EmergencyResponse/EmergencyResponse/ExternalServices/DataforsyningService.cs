@@ -7,6 +7,7 @@
     using System.Collections.Generic;
     using EmergencyResponse.Model;
     using EmergencyResponse.ExternalServices.Interfaces;
+    using EmergencyResponse.ExternalServices.Mapping;
 
     public class DataforsyningenService : IDataforsyningService
     {
@@ -49,6 +50,36 @@
             }
             throw new Exception($"Failed to fetch address data. Status Code: {response.StatusCode}");
         }
+
+
+        public async Task<List<Address>> GetAddressesInCircleAsync(Address center, int radius)
+        {
+            if (center == null || !center.Latitude.HasValue || !center.Longitude.HasValue)
+                throw new ArgumentException("Center address must have valid latitude and longitude.");
+
+            string longitudeString = center.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string latitudeString = center.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string radiusString = radius.ToString();
+            string url = $"https://api.dataforsyningen.dk/adresser?cirkel={longitudeString},{latitudeString},{radiusString}&struktur=mini";
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                var addresses = JsonConvert.DeserializeObject<List<Address>>(jsonResponse, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Converters = new List<JsonConverter> { new AddressJsonConverter() }
+                });
+                return addresses;
+            }
+            else
+            {
+                throw new HttpRequestException($"Failed to fetch address data. Status Code: {response.StatusCode}");
+            }
+        }
+
+
     }
 
 }

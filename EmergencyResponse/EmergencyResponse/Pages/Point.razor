@@ -12,21 +12,73 @@
 {
     <p>Address: @address.StreetName @address.HouseNumber, @address.PostalCode @address.PostalCodeName</p>
     <p>Coordinates: Latitude @address.Latitude, Longitude @address.Longitude</p>
+
+    <div>
+        <p>Choose a radius to fetch adresses from the address</p>
+        <input type="range" min="1" max="20" value="@radius" @oninput="HandleRadiusChange" />
+        <p>Selected radius: @radius km</p>
+        <button class="btn btn-primary" @onclick="FetchAddresses">Fetch Addresses</button>
+    </div>
 }
 else
 {
     <p>Click the button to fetch an address.</p>
+    <button class="btn btn-primary" @onclick="FetchAddress">Fetch Address</button>
 }
 
-<button class="btn btn-primary" @onclick="FetchAddress">Fetch Address</button>
+@if (addresses != null && addresses.Count > 0)
+{
+    <h3>Addresses within @radius km:</h3>
+    <ul>
+        @foreach (var addr in addresses)
+        {
+            <li class="address-block">
+                @addr.StreetName @addr.HouseNumber,
+                @(string.IsNullOrEmpty(addr.Floor) ? "" : addr.Floor)
+                @(string.IsNullOrEmpty(addr.Door) ? "" : addr.Door)
+                @addr.PostalCode @addr.PostalCodeName 
+            </li>
+        }
+    </ul>
+}
+else if (addresses != null)
+{
+    <p>No addresses found within the specified radius.</p>
+}
+
+<style>
+.address-block {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: white;
+    color: black;
+    font-family: Arial, sans-serif;
+}
+</style>
 
 @code {
-    private Address address;
+    private Address? address;
+    private List<Address>? addresses;
+    private int radius = 10; // Default radius
 
     private async Task FetchAddress()
     {
         // Example address query, replace with dynamic data if needed
         Address queryAddress = new Address("Rødegårdsvej", "98C", "3", "th", "5000", "Odense C");
         address = await DataforsyningService.GetAddressAsync(queryAddress);
+    }
+
+    private async Task FetchAddresses()
+    {
+        addresses = await DataforsyningService.GetAddressesInCircleAsync(address, radius);
+    }
+
+    private void HandleRadiusChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var newRadius))
+        {
+            radius = newRadius;
+        }
     }
 }
