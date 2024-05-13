@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmergencyResponse", "Emerge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmergencyResponseTest", "EmergencyResponseTest\EmergencyResponseTest.csproj", "{EFD0CE25-A1A0-4C4B-A6C8-827CD6FDFDFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecFlowTests", "SpecFlowTests\SpecFlowTests.csproj", "{61AD33E5-5BA8-4F48-BBF4-D2123471CF66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{EFD0CE25-A1A0-4C4B-A6C8-827CD6FDFDFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFD0CE25-A1A0-4C4B-A6C8-827CD6FDFDFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFD0CE25-A1A0-4C4B-A6C8-827CD6FDFDFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61AD33E5-5BA8-4F48-BBF4-D2123471CF66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61AD33E5-5BA8-4F48-BBF4-D2123471CF66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61AD33E5-5BA8-4F48-BBF4-D2123471CF66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61AD33E5-5BA8-4F48-BBF4-D2123471CF66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
