@@ -10,32 +10,42 @@
 <h3>Søg efter adresse</h3>
 <h2>Address Details</h2>
 <div style="display: flex;">
+    @if (validationText != null && validationText != "")
+    {
+        <div class="popup-container">
+            <div class="popup">
+                <h3>Validation</h3>
+                <p>@validationText</p>
+                <button @onclick="closePopup">Ok</button>
+            </div>
+        </div>
+    }
     <div class="container">
         <div class="input-wrapper">
             <form @onsubmit="SearchAddress" class="input">
                 <div>
-                    <label for="street">Vejnavn:</label>
-                    <input class="textInput" type="text" id="street" name="street" @bind="searchAddress.StreetName" />
+                    <label for="street">*Vejnavn:</label>
+                    <input required placeholder="abc" class="textInput" type="text" id="street" name="street" @bind="searchAddress.StreetName" />
                 </div>
                 <div>
-                    <label for="houseNumber">Husnummer:</label>
-                    <input class="textInput" type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
+                    <label for="houseNumber">*Husnummer:</label>
+                    <input required placeholder="123 abc" class="textInput" type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
                 </div>
                 <div>
-                    <label for="postalCode">Postnummer:</label>
-                    <input class="textInput" type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
+                    <label for="postalCode">*Postnummer:</label>
+                    <input required placeholder="1234" class="textInput" type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
                 </div>
                 <div>
                     <label for="postalCodeName">By:</label>
-                    <input class="textInput" type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
+                    <input placeholder="abc" class="textInput" type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
                 </div>
                 <div>
                     <label for="floor">Etage:</label>
-                    <input class="textInput" type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
+                    <input placeholder="123" class="textInput" type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
                 </div>
                 <div>
                     <label for="door">Dør:</label>
-                    <input class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
+                    <input placeholder="123" class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
                 </div>
                 <button class="button" id="submit" type="submit">Søg</button>
             </form>
@@ -78,31 +88,63 @@
         {
             <p>Vælg hvad du gør nu</p>
             @selectedAddress.StreetName
-            
         }
     </div>
 </div>
 
 @code {
+    private string validationText = "";
     public AddressDTO searchAddress = new AddressDTO();
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
     public AddressDTO selectedAddress;
 
+    public string StreetText = "";
+
     public async Task SearchAddress()
     {
+        /*
+        * Validation for user input
+        */
+        if(searchAddress.StreetName == "" || searchAddress.StreetName.Any(char.IsDigit))
+        {
+            validationText = "Vejnavnet må ikke være tomt eller indeholde tal";
+            return;
+        }
+        if (searchAddress.PostalCode.Length != 4 || searchAddress.PostalCode.Any(char.IsLetter))
+        {
+            validationText = "Postnummeret skal bestå af 4 tal";
+            return;
+        }
+        if (searchAddress.PostalCodeName != null && searchAddress.PostalCodeName.Any(char.IsDigit))
+        {
+            validationText = "Byen må ikke indeholde tal";
+            return;
+        }
+        if (searchAddress.Floor != null && searchAddress.Floor.Any(char.IsLetter))
+        {
+            validationText = "Etagen må ikke indeholde bogstaver";
+            return;
+        }
+        if (searchAddress.Door != null && searchAddress.Door.Any(char.IsLetter))
+        {
+            validationText = "Dør må ikke indeholde bogstaver";
+            return;
+        }
         selectedAddress = null;
         var httpClient = new HttpClient();
         AddressController addressController = new AddressController(httpClient);
 
         possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
 
+        int addressBFE = 0;
 
-        int addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
-
-
+        if(possibleAddresses.Count !> 0)
+        {
+            addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+        }
 
         foreach (var address in possibleAddresses)
-            {
+        {
             address.BFE = addressBFE;
         }
 
@@ -117,6 +159,7 @@
         // var httpClient = new HttpClient();
         // var addressController = new AddressController(httpClient);
     }
+
     public void SelectAddress(AddressDTO address)
     {
         //Checking if any address is selected so the click event won't do aything in case one is selected
@@ -126,6 +169,11 @@
             possibleAddresses.Clear();
             possibleAddresses.Add(selectedAddress);
         }
+    }
+
+    private void closePopup()
+    {
+        validationText = "";
     }
 }
 
@@ -227,4 +275,25 @@
             box-shadow: 0 5px #666;
             transform: translateY(4px);
         }
+
+    .popup-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+        z-index: 9999; /* Ensure the popup is above other content */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 10000; /* Ensure the popup is above the background */
+    }
 </style>
