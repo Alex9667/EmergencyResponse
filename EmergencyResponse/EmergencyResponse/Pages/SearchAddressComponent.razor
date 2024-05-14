@@ -93,9 +93,13 @@
         selectedAddress = null;
         var httpClient = new HttpClient();
         AddressController addressController = new AddressController(httpClient);
-        possibleAddresses = await addressController.SearchAddress(searchAddress);
 
-         int addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+        possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
+
+
+        int addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+
+
 
         foreach (var address in possibleAddresses)
             {
@@ -112,7 +116,6 @@
         //}
         // var httpClient = new HttpClient();
         // var addressController = new AddressController(httpClient);
-        possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
     }
     public void SelectAddress(AddressDTO address)
     {
