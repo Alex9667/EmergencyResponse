@@ -46,17 +46,6 @@ else if (addresses != null)
     <p>No addresses found within the specified radius.</p>
 }
 
-<style>
-.address-block {
-    border: 1px solid black;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: white;
-    color: black;
-    font-family: Arial, sans-serif;
-}
-</style>
-
 @code {
     private Address? address;
     private List<Address>? addresses;
@@ -82,3 +71,14 @@ else if (addresses != null)
         }
     }
 }
+
+<style>
+    .address-block {
+        border: 1px solid black;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: white;
+        color: black;
+        font-family: Arial, sans-serif;
+    }
+</style>
