@@ -1,7 +1,11 @@
 ﻿@page "/searchAddress"
 @using EmergencyResponse.DTO
+@using EmergencyResponse.ExternalServices
+@using EmergencyResponse.ExternalServices.Interfaces
 @using EmergencyResponse.Model
 @using EmergencyResponse.Controller
+@inject IDataforsyningService dataforsyningService
+@inject IDatafordelerenService dataFordelerenService
 
 <h3>Søg efter adresse</h3>
 <h2>Address Details</h2>
@@ -57,9 +61,6 @@
         {
             <p>Vælg hvad du gør nu</p>
             @selectedAddress.StreetName
-            <button>
-                Få omkringliggende ejendomme
-            </button>
             
         }
     </div>
@@ -77,16 +78,16 @@
     }
 </style>
 
-    @code {
+@code {
     public AddressDTO searchAddress = new AddressDTO();
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
     public AddressDTO selectedAddress;
 
     public async Task SearchAddress()
     {
-        var httpClient = new HttpClient();
-        var addressController = new AddressController(httpClient);
-        possibleAddresses = await addressController.SearchAddress(searchAddress);
+        // var httpClient = new HttpClient();
+        // var addressController = new AddressController(httpClient);
+        possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
     }
     public void SelectAddress(AddressDTO address)
     {

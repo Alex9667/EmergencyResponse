@@ -1,0 +1,38 @@
+﻿[
+  {
+    "vejnavn": "Mellemvej",
+    "husnr": "7",
+    "etage": "1",
+    "dør": "th",
+    "postnr": "5230",
+    "postnrnavn": "odense M",
+    "id": "hkdhkfjskf"
+  },
+  {
+    "vejnavn": "Mellemvej",
+    "husnr": "7",
+    "etage": "1",
+    "dør": "tv",
+    "postnr": "5230",
+    "postnrnavn": "odense M",
+    "id": "hkdhkfjskf"
+  },
+  {
+    "vejnavn": "Mellemvej",
+    "husnr": "7",
+    "etage": "st",
+    "dør": "th",
+    "postnr": "5230",
+    "postnrnavn": "odense M",
+    "id": "hkdhkfjskf"
+  },
+  {
+    "vejnavn": "Mellemvej",
+    "husnr": "7",
+    "etage": "st",
+    "dør": "tv",
+    "postnr": "5230",
+    "postnrnavn": "odense M",
+    "id": "hkdhkfjskf"
+  }
+]

@@ -4,6 +4,7 @@ using FluentAssertions.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using EmergencyResponse.Model;
+using EmergencyResponse.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,13 @@ builder.Services.AddHttpClient<IDataforsyningService, DataforsyningenService>(cl
     // Optionally configure the client here if needed
     client.BaseAddress = new Uri("https://api.dataforsyningen.dk/");
 });
+builder.Services.AddHttpClient<IDatafordelerenService, DatafordelerenService>(client =>
+{
+    // Optionally configure the client here if needed
+    client.BaseAddress = new Uri("https://services.datafordeler.dk/");
+});
+
+builder.Services.AddScoped<IApiMessageHandler, ApiMessageHandler>();
 
 var app = builder.Build();
 

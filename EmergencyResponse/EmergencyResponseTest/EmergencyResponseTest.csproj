@@ -29,4 +29,10 @@
     <ProjectReference Include="..\EmergencyResponse\EmergencyResponse.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="JsonData\DataForsyningenAddressJson.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
