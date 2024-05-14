@@ -5,65 +5,122 @@
 
 <h3>Søg efter adresse</h3>
 <h2>Address Details</h2>
-<div style ="display: flex;">
-    <div style="flex: 1;">
-        <div>
-            <form @onsubmit="SearchAddress">
+<div style="display: flex;">
+    <div class="container">
+        <div class="input-wrapper">
+            <form @onsubmit="SearchAddress" class="input">
                 <div>
                     <label for="street">Vejnavn:</label>
-                    <input type="text" id="street" name="street" @bind="searchAddress.StreetName" />
+                    <input class="textInput" type="text" id="street" name="street" @bind="searchAddress.StreetName" />
                 </div>
                 <div>
                     <label for="houseNumber">Husnummer:</label>
-                    <input type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
+                    <input class="textInput" type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
                 </div>
                 <div>
                     <label for="postalCode">Postnummer:</label>
-                    <input type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
+                    <input class="textInput" type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
                 </div>
                 <div>
                     <label for="postalCodeName">By:</label>
-                    <input type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
+                    <input class="textInput" type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
                 </div>
                 <div>
                     <label for="floor">Etage:</label>
-                    <input type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
+                    <input class="textInput" type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
                 </div>
                 <div>
                     <label for="door">Dør:</label>
-                    <input type="text" id="door" name="door" @bind="searchAddress.Door" />
+                    <input class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
                 </div>
-                <button type="submit" >Submit</button>
+                <button class="button" id="submit" type="submit">Søg</button>
             </form>
         </div>
-        <div>
         @if (possibleAddresses.Count > 0)
         {
-            <p>Vælg den rigtige adresse</p>
-            <ul>
-                @foreach (var address in possibleAddresses)
-                {
-                    <li class="list-item" @onclick="() => SelectAddress(address)">
-                        @address.StreetName @address.HouseNumber
-                        @address.PostalCode @address.PostalCodeName
-                    </li>
-                }
-            </ul>
+            <div class="table-container" id="tableContainer">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>BFE</th>
+                            <th>Vejnavn</th>
+                            <th>Husnummer</th>
+                            <th>Etage</th>
+                            <th>Dør</th>
+                            <th>Postnummer</th>
+                            <th>By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var address in possibleAddresses)
+                        {
+                            <tr @onclick="() => SelectAddress(address)">
+                                <td>@address.BFE.ToString()</td>
+                                <td>@address.StreetName</td>
+                                <td>@address.HouseNumber</td>
+                                <td>@address.Floor</td>
+                                <td>@address.Door</td>
+                                <td>@address.PostalCode</td>
+                                <td>@address.PostalCodeName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
-        </div>
     </div>
     <div style="flex: 1;">
-        @if(selectedAddress != null)
+        @if (selectedAddress != null)
         {
             <p>Vælg hvad du gør nu</p>
             @selectedAddress.StreetName
-            <button>
+            <button class="button">
                 Få omkringliggende ejendomme
             </button>
-            
         }
     </div>
 </div>
+
+@code {
+    public AddressDTO searchAddress = new AddressDTO();
+    public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
+    public AddressDTO selectedAddress;
+
+    public async Task SearchAddress()
+    {
+        selectedAddress = null;
+        var httpClient = new HttpClient();
+        AddressController addressController = new AddressController(httpClient);
+        possibleAddresses = await addressController.SearchAddress(searchAddress);
+
+         int addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+
+        foreach (var address in possibleAddresses)
+            {
+            address.BFE = addressBFE;
+        }
+
+        /**
+         * Udkommenteret da det tager meget lang tid at lave alle de kald for at få bfe nummeret. 
+         * Jeg er ikke sikker på om alle BFE'er altid er de samme på hver søgning, så gemmer til senere./
+        */
+        //foreach (var address in possibleAddresses)
+        //{
+        //    address.BFE = await addressController.GetAddressBFE($"{address.StreetName} {address.HouseNumber}");
+        //}
+    }
+    public void SelectAddress(AddressDTO address)
+    {
+        //Checking if any address is selected so the click event won't do aything in case one is selected
+        if(selectedAddress == null)
+        {
+            selectedAddress = address;
+            possibleAddresses.Clear();
+            possibleAddresses.Add(selectedAddress);
+        }
+    }
+}
+
 
 <style>
     .list-item {
@@ -75,22 +132,91 @@
     .list-item:hover {
         background-color: lightgray; /* Change background color on hover */
     }
+
+    .container {
+        display: flex;
+    }
+
+    .input-wrapper {
+        margin-right: 50px; /* Adjust spacing between input field and table */
+    }
+
+    .table-container {
+        border-radius: 15px;
+        overflow: hidden; /* Ensures rounded corners are visible */
+        flex: 1; /* Allow the table container to grow and fill available space */
+    }
+
+    .table {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+        .table td, .table th {
+            border: 1px solid #ededed;
+            padding: 8px;
+            color: white;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #302e2d;
+        }
+
+        .table tr {
+            background-color: #302e2d;
+        }
+
+        .table tr:hover {
+                background-color: #423F3E;
+        }
+
+        .table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #6e6a69;
+            color: white;
+        }
+
+    .input{
+        width: 20%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .textInput{
+        border-radius: 15px;
+        background-color: #302e2d;
+        color: white;
+        text-align: center;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 5px 20px 10px;
+        font-size: 24px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #302e2d;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #6e6a69;
+        margin-top: 15px;
+    }
+
+        .button:hover {
+            background-color: #423F3E
+        }
+
+        .button:active {
+            background-color: #423F3E;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
 </style>
-
-    @code {
-    public AddressDTO searchAddress = new AddressDTO();
-    public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
-    public AddressDTO selectedAddress;
-
-    public async Task SearchAddress()
-    {
-        var httpClient = new HttpClient();
-        var addressController = new AddressController(httpClient);
-        possibleAddresses = await addressController.SearchAddress(searchAddress);
-    }
-    public void SelectAddress(AddressDTO address)
-    {
-        selectedAddress = address;
-        possibleAddresses.Clear();
-    }
-}
