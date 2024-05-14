@@ -34,6 +34,18 @@ namespace EmergencyResponseTest
             result.Should().BeEquivalentTo(expectedJordstykkeValue);
         }
 
+        [Theory]
+        [MemberData(nameof(GetJordstykkeFromDarTestData))]
+        public async Task DataFordelerenService_GetGrundIdFromBBR_ShouldReturnExpectedId(string jordstykke, string expectedGrundIdValue)
+        {
+            var mockHttpClient = new Mock<HttpClient>();
+            var mockApiMessageHandler = new Mock<IApiMessageHandler>();
+            mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedGrundIdValue);
+            _datafordelerenService = new DatafordelerenService(mockHttpClient.Object, mockApiMessageHandler.Object);
+            string result = await _datafordelerenService.GetGrundIdFromBBR(jordstykke);
+            result.Should().BeEquivalentTo(expectedGrundIdValue);
+        }
+
         public static IEnumerable<Object[]> GetJordstykkeFromDarTestData()
         {
             return new List<object[]>

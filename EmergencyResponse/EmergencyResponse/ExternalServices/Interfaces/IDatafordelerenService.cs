@@ -7,5 +7,6 @@ namespace EmergencyResponse.ExternalServices.Interfaces
     {
         Task<List<Address>> GetAddressesInBuilding(Address address);
         Task<string> GetJordstykkeFromDAR(string addressId);
+        Task<string> GetGrundIdFromBBR(string jordstykke);
     }
 }

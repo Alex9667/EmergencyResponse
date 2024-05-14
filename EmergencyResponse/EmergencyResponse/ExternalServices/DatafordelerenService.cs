@@ -29,5 +29,15 @@ namespace EmergencyResponse.ExternalServices
             var content = await response.Content.ReadAsStringAsync();
             return _apiMessageHandler.GetNestedPropertyFromJson(content, "husnummer", "jordstykke");
         }
+
+        public async Task<string> GetGrundIdFromBBR(string jordstykke)
+        {
+            string URL = $"BBR/BBRPublic/1/rest/grund?" +
+                $"jordstykke={jordstykke}" +
+                $"&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024&format=json";
+            var response = await _httpClient.GetAsync(URL);
+            var content = await response.Content.ReadAsStringAsync();
+            return _apiMessageHandler.GetPropertyFromJson(content, "id_lokalId");
+        }
     }
 }
