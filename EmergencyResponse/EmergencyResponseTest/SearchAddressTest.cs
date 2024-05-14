@@ -43,7 +43,7 @@ namespace EmergencyResponseTest
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
-            mockApiMessageHandler.Setup(m => m.ParseAddresses(It.IsAny<string>())).Returns(returnedAddresses);
+            mockApiMessageHandler.Setup(m => m.ParseAddressesFromDataForsyning(It.IsAny<string>())).Returns(returnedAddresses);
 
             _dataforsyningenService = new DataforsyningenService(httpClient, mockApiMessageHandler.Object);
             var result = await _dataforsyningenService.SearchAddress(address);

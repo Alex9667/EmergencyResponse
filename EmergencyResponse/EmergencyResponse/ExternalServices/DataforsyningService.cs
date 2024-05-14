@@ -97,7 +97,7 @@
                 $"{doorValue}&struktur=mini";
             var response = await _httpClient.GetAsync(URL);
             var content = await response.Content.ReadAsStringAsync();
-            List<AddressDTO> result = _apiMessageHandler.ParseAddresses(content);
+            List<AddressDTO> result = _apiMessageHandler.ParseAddressesFromDataForsyning(content);
             return result;
         }
     }

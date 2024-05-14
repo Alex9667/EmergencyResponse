@@ -7,7 +7,7 @@ namespace EmergencyResponse.Services
 {
     public class ApiMessageHandler : IApiMessageHandler
     {
-        public List<AddressDTO> ParseAddresses(string json)
+        public List<AddressDTO> ParseAddressesFromDataForsyning(string json)
         {
             var obj = System.Text.Json.JsonSerializer.Deserialize<List<JsonElement>>(json);
             List<AddressDTO> result = new List<AddressDTO>();
@@ -49,12 +49,69 @@ namespace EmergencyResponse.Services
                 {
                     return FindJsonElement(property, keyValues.Take(new Range(1, keyValues.Length)).ToArray());
                 }
+                else if (property.ValueKind == JsonValueKind.Array)
+                {
+                    for (int i = 0; i < property.GetArrayLength(); i++)
+                    {
+                        return FindJsonElement(property[i], keyValues.Take(new Range(1, keyValues.Length)).ToArray());
+                    }
+                }
                 else
                 {
                     return property.GetString();
                 }
             }
             return null;
+        }
+
+        public string GetBuildingIdFromJsonElement(string content, string husnummerId, params string[] keyValues)
+        {
+            var element = GetBuildingElementFromHusnummerId(content, husnummerId, keyValues);
+
+            return GetPropertyFromJson(element, "id_lokalId");
+        }
+
+        public string GetBuildingElementFromHusnummerId(string content, string husnummerId, params string[] keyValues)
+        {
+            var elements = JsonSerializer.Deserialize<List<JsonElement>>(content);
+            JsonElement result = new JsonElement();
+            foreach (var element in elements)
+            {
+                if (FindJsonElement(element, keyValues) == husnummerId)
+                {
+                    result = element;
+                }
+            }
+            if (result.ValueKind == JsonValueKind.Null)
+            {
+                throw new Exception($"No JsonElements conatins husnummerId: {husnummerId}");
+            }
+            var text = result.GetRawText();
+            return result.GetRawText();
+        }
+
+        public List<string> GetPropertiesFromJson(string json, string keyValue)
+        {
+            var elements = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            List<string> result = new List<string>();
+            foreach (var element in elements)
+            {
+                var id = GetPropertyFromJson(element.GetRawText(), "adresseIdentificerer");
+                result.Add(id);
+            }
+            return result;
+        }
+
+        public Address ParseAddressFromDAR(string json)
+        {
+            var streetName = GetNestedPropertyFromJson(json, "husnummer", "navngivenVej", "vejnavn");
+            var houseNumber = GetNestedPropertyFromJson(json, "husnummer", "husnummertekst");
+            var floor = GetPropertyFromJson(json, "etagebetegnelse");
+            var door = GetPropertyFromJson(json, "dørbetegnelse");
+            var postalCode = GetNestedPropertyFromJson(json, "husnummer", "postnummer", "postnr");
+            var postalCodeName = GetNestedPropertyFromJson(json, "husnummer", "postnummer", "navn");
+            var result = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName);
+            return result;
         }
     }
 }
