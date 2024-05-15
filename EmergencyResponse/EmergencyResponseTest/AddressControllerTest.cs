@@ -23,14 +23,14 @@ namespace EmergencyResponseTest
         public AddressControllerTest()
         {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            var httpClient = new HttpClient(/*mockHttpMessageHandler.Object*/);
 
             _addressController = new AddressController(httpClient);
         }
 
         [Theory]
-        [InlineData("Nygade 74 7430 Ikast")]
-        [InlineData("Fjellerupvej 7 5463 Ikast")]
+        [InlineData("Nygade 74 7430")]
+        [InlineData("Fjellerupvej 7 5463")]
         public async void AddressController_GetAddressBFE_ShouldReturnString(string address)
         {
             int bfe = await _addressController.GetAddressBFE(address);

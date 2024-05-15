@@ -18,16 +18,10 @@ namespace SpecFlowTests.StepDefinitions
             _addressController = new AddressController(httpClient);
         }
 
-        // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-
         [Given("the street is (.*)")]
         public void GivenStreetIs(string street)
         {
-            //TODO: implement arrange (precondition) logic
-            // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
-            // To use the multiline text or the table argument of the scenario,
-            // additional string/Table parameters can be defined on the step definition
-            // method. 
+            //arrange (precondition)
 
             _address = street;
         }
@@ -35,7 +29,7 @@ namespace SpecFlowTests.StepDefinitions
         [Given("the house number is (.*)")]
         public void GivenTheHouseNumberIs(string houseNumber)
         {
-            //TODO: implement arrange (precondition) logic
+            //arrange (precondition)
 
             _address += " " + houseNumber;
         }
@@ -43,29 +37,24 @@ namespace SpecFlowTests.StepDefinitions
         [Given("the postal code is (.*)")]
         public void GivenThePostalCodeIs(int postalCode)
         {
-            //TODO: implement arrange (precondition) logic
+            //arrange (precondition)
 
             _address += " " + postalCode;
         }
 
         [When("the address is looked up")]
-        public async void WhenTheAddressIsLookedUp()
+        public async Task WhenTheAddressIsLookedUp()
         {
-            //TODO: implement act (action) logic
-
-            _bfe = Convert.ToInt32(_addressController.GetAddressBFE(_address));
-
-            await Task.Delay(3000);
+            //act (action)
+            _bfe = Convert.ToInt32(await _addressController.GetAddressBFE(_address));
         }
 
         [Then("the result should be (.*)")]
-        public void ThenTheResultShouldBe(int result)
+        public async Task ThenTheResultShouldBe(int result)
         {
-            //TODO: implement assert (verification) logic
-
+            //assert (verification) 
+            await WhenTheAddressIsLookedUp();
             _bfe.Should().Be(result);
-
-            Console.WriteLine();
         }
     }
 }
