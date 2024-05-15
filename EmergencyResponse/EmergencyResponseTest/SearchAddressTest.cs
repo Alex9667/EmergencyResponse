@@ -192,15 +192,6 @@ namespace EmergencyResponseTest
                     new List<AddressDTO> {
                         new AddressDTO("Mellemvej", "7", null, null, "5230", "odense M", "hkdhkfjskf"),
                     },
-                    //"[{" +
-                    //    "\"vejnavn\":\"Mellemvej\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":null," +
-                    //    "\"dør\":null," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}]"
                 },
             };
         }

@@ -21,37 +21,6 @@ namespace EmergencyResponse.Controller
         {
             _httpClient = httpClient;
         }
-        public Address CreateAddress(string json)
-        {
-            if (json == null || json == "") return null;
-            var result = JsonSerializer.Deserialize<Address>(json);
-            if (result != null)
-            {
-                return result;
-            }
-            return null;
-        }
-
-        public object CreateAddress(string streetName, string houseNumber, string? floor, string? door, string postalCode, string postalCodeName, string addressId)
-        {
-            return new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName, addressId);
-        }
-
-
-        public Address GetAddress()
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetAddressesInBuilding(Address address)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetAddressID(Address address)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<List<AddressDTO>> SearchAddress(AddressDTO address)
         {
