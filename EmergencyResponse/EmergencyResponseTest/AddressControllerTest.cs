@@ -38,7 +38,7 @@ namespace EmergencyResponseTest
         }
 
         [Theory, ClassData(typeof(TestData.ModelData))]
-        public async void ClassDataModelTest_ShouldMatchInputValues(Address address)
+        public async void ClassDataController_ShouldReturnBfe(Address address)
         {
             string addressString = address.StreetName + " " + address.HouseNumber + " " + address.PostalCode + " " +  address.PostalCodeName;
 
