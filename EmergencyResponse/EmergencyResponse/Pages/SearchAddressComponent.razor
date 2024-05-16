@@ -72,6 +72,12 @@
                 </table>
             </div>
         }
+        @if (showAddressNotFoundWarning)
+        {
+            <div id="NoMatchingAddressWarningLabel" >
+                We could not find the address you're looking for.
+            </div>
+        }
     </div>
     <div style="flex: 1;">
         @if (selectedAddress != null)
@@ -88,24 +94,31 @@
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
     public List<AddressDTO> surroundingAddresses = new List<AddressDTO>();
     public AddressDTO selectedAddress;
+    bool showAddressNotFoundWarning = false;
 
     public async Task SearchAddress()
     {
+        showAddressNotFoundWarning = false;
         selectedAddress = null;
         var httpClient = new HttpClient();
         AddressController addressController = new AddressController(httpClient);
 
         possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
 
-
-        int addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
-
-
-
-        foreach (var address in possibleAddresses)
+        int addressBFE;
+        if(possibleAddresses.Count > 0)
         {
-            address.BFE = addressBFE;
+            addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+            foreach (var address in possibleAddresses)
+            {
+                address.BFE = addressBFE;
+            }
         }
+        else
+        {
+            showAddressNotFoundWarning = true;
+        }
+
 
         /**
          * Udkommenteret da det tager meget lang tid at lave alle de kald for at få bfe nummeret. 
@@ -129,7 +142,6 @@
         }
     }
 }
-
 
 <style>
     .list-item {

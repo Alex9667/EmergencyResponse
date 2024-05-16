@@ -96,6 +96,14 @@
                 $"{floorValue} " +
                 $"{doorValue}&struktur=mini";
             var response = await _httpClient.GetAsync(URL);
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException e)
+            {
+                throw new Exception($"There was an error trying to call the API: {e.Message}");
+            }
             var content = await response.Content.ReadAsStringAsync();
             List<AddressDTO> result = _apiMessageHandler.ParseAddressesFromDataForsyning(content);
             return result;

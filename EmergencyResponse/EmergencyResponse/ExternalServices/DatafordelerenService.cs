@@ -20,29 +20,43 @@ namespace EmergencyResponse.ExternalServices
             var husnummerId = await GetHusnummerIdFromDAR(address.AddressId);
             var grundId = await GetGrundIdFromBBR(jordstykkeNummer);
             var buildingId = await GetBuildingIdFromBBR(grundId, husnummerId);
-            return await GetUnitsIdsFromBBR(buildingId);
+            var unitIds = await GetUnitsIdsFromBBR(buildingId);
+            return await GetUnitAddressesFromDAR(unitIds);
         }
 
-        public async Task<string> CallFromDARApi(string addressId)
+        public async Task<string> CallApi(string url)
+        {
+            var response = await _httpClient.GetAsync(url);
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"There was an error when calling the API: \"{ex.Message}\"");
+            }
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> CallDARAddressApi(string addressId)
         {
             string URL = $"DAR/DAR/2.0.0/rest/adresse?" +
                 $"id={addressId}" +
                 "&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024" +
                 "&format=json";
-            var response = await _httpClient.GetAsync(URL);
-            return await response.Content.ReadAsStringAsync();
+            return await CallApi(URL);
         }
 
         public async Task<string> GetJordstykkeFromDAR(string addressId)
         {
-            string json = await CallFromDARApi(addressId);
-            return _apiMessageHandler.GetNestedPropertyFromJson(json, "husnummer", "jordstykke");
+            string content = await CallDARAddressApi(addressId);
+            return _apiMessageHandler.GetNestedPropertyFromJson(content, "husnummer", "jordstykke");
         }
 
         public async Task<string> GetHusnummerIdFromDAR(string addressId)
         {
-            string json = await CallFromDARApi(addressId);
-            return _apiMessageHandler.GetNestedPropertyFromJson(json, "husnummer", "id_lokalId");
+            string content = await CallDARAddressApi(addressId);
+            return _apiMessageHandler.GetNestedPropertyFromJson(content, "husnummer", "id_lokalId");
         }
 
         public async Task<string> GetGrundIdFromBBR(string jordstykke)
@@ -50,38 +64,41 @@ namespace EmergencyResponse.ExternalServices
             string URL = $"BBR/BBRPublic/1/rest/grund?" +
                 $"jordstykke={jordstykke}" +
                 $"&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024&format=json";
-            var response = await _httpClient.GetAsync(URL);
-            var content = await response.Content.ReadAsStringAsync();
-            return _apiMessageHandler.GetPropertyFromJson(content, "id_lokalId");
+            var content = await CallApi(URL);
+            return _apiMessageHandler.GetPropertyFromJson(content, "id_lokalId")[0];
         }
         public async Task<string> GetBuildingIdFromBBR(string grundId, string husnummerId)
         {
             string URL = $"BBR/BBRPublic/1/rest/bygning?" +
                 $"grund={grundId}" +
                 $"&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024&format=json";
-            var response = await _httpClient.GetAsync(URL);
-            var content = await response.Content.ReadAsStringAsync();
-            var buildingElement = _apiMessageHandler.GetBuildingIdFromJsonElement(content, husnummerId, "opgangList", "opgang", "adgangFraHusnummer");
-            var buildingId = _apiMessageHandler.GetPropertyFromJson(buildingElement, "id_lokalId");
+            var content = await CallApi(URL);
+            var buildingId = _apiMessageHandler.GetBBRBuildingIdFromJson(content, husnummerId, "opgangList", "opgang", "adgangFraHusnummer");
             return buildingId;
         }
 
-        public async Task<List<AddressDTO>> GetUnitsIdsFromBBR(string buildingId)
+        public async Task<List<string>> GetUnitsIdsFromBBR(string buildingId)
         {
-            string URL = $"BBR/BBRPublic/1/rest/bygning?" +
+            string URL = $"BBR/BBRPublic/1/rest/enhed?" +
                 $"bygning={buildingId}" +
                 $"&username=QRUSLIHSDE&password=SOFTWAREKval!tet2024&format=json";
-            var response = await _httpClient.GetAsync(URL);
-            var content = await response.Content.ReadAsStringAsync();
-            List<string> unitIds = _apiMessageHandler.GetPropertiesFromJson(content, "id_lokalId");
+            var content = await CallApi(URL);
+            List<string> unitIds = _apiMessageHandler.GetPropertyFromJson(content, "adresseIdentificerer");
+
+            return unitIds;
+        }
+
+        public async Task<List<AddressDTO>> GetUnitAddressesFromDAR(List<string> unitIds)
+        {
             var units = new List<AddressDTO>();
             foreach (var id in unitIds)
             {
-                var json = await CallFromDARApi(id);
-                var unit = new AddressDTO(_apiMessageHandler.ParseAddressFromDAR(json));
+                var DarContent = await CallDARAddressApi(id);
+                var unit = new AddressDTO(_apiMessageHandler.ParseSingleAddressFromDAR(DarContent));
                 units.Add(unit);
             }
             return units;
         }
+
     }
 }
