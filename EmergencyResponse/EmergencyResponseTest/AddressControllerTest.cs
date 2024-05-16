@@ -36,5 +36,15 @@ namespace EmergencyResponseTest
             int bfe = await _addressController.GetAddressBFE(address);
             bfe.ToString().Should().NotBeNullOrEmpty();
         }
+
+        [Theory, ClassData(typeof(TestData.ModelData))]
+        public async void ClassDataModelTest_ShouldMatchInputValues(Address address)
+        {
+            string addressString = address.StreetName + " " + address.HouseNumber + " " + address.PostalCode + " " +  address.PostalCodeName;
+
+            int bfe = await _addressController.GetAddressBFE(addressString);
+
+            bfe.ToString().Should().NotBeNullOrEmpty();
+        }
     }
 }

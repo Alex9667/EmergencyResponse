@@ -97,6 +97,20 @@ namespace EmergencyResponseTest
                 act.Should().Throw<Exception>().Where(e => e.GetType() == expectedException && e.Message.Contains(expectedMessage));
             }
 
+            [Theory, ClassData(typeof(TestData.ModelData))]
+            public void ClassDataModelTest_ShouldMatchInputValues(Address address)
+            {
+                Address addressTest = new Address(
+                    address.StreetName, 
+                    address.HouseNumber, 
+                    address.Floor, 
+                    address.Door, 
+                    address.PostalCode, 
+                    address.PostalCodeName);
+
+                addressTest.Should().BeEquivalentTo(address);
+            }
+
 
 
             /*
