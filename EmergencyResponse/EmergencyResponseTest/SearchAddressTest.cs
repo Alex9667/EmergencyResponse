@@ -11,6 +11,7 @@ using EmergencyResponse.Interfaces;
 using EmergencyResponse.ExternalServices;
 using EmergencyResponse.Services;
 using EmergencyResponse.Model;
+using EmergencyResponse.SharedClasses.Validation.Interfaces;
 
 namespace EmergencyResponseTest
 {
@@ -24,8 +25,9 @@ namespace EmergencyResponseTest
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
             var mockApiMessageHandler = new Mock<IApiMessageHandler>(MockBehavior.Strict);
+            var mockAddressValidator = new Mock<IAddressValidator>(MockBehavior.Strict);
 
-            _dataforsyningenService = new DataforsyningenService(httpClient, mockApiMessageHandler.Object);
+            _dataforsyningenService = new DataforsyningenService(httpClient, mockApiMessageHandler.Object, mockAddressValidator.Object);
 
         }
         [Theory]
@@ -43,9 +45,10 @@ namespace EmergencyResponseTest
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
+            var mockAddressValidator = new Mock<IAddressValidator>();
             mockApiMessageHandler.Setup(m => m.ParseAddresses(It.IsAny<string>())).Returns(returnedAddresses);
 
-            _dataforsyningenService = new DataforsyningenService(httpClient, mockApiMessageHandler.Object);
+            _dataforsyningenService = new DataforsyningenService(httpClient, mockApiMessageHandler.Object, mockAddressValidator.Object);
             var result = await _dataforsyningenService.SearchAddress(address);
             result.Should().BeEquivalentTo(returnedAddresses);
         }

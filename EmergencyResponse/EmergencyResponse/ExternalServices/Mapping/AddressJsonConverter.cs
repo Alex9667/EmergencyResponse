@@ -7,26 +7,30 @@
     using EmergencyResponse.SharedClasses.Mapping;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using EmergencyResponse.SharedClasses.Validation.Interfaces;
+    using EmergencyResponse.SharedClasses.Validation;
 
     public class AddressJsonConverter : JsonConverter<Address>
     {
         private readonly ILanguageStrategy _languageStrategy;
+        private readonly IAddressValidator _validator;
 
 
-        public AddressJsonConverter (ILanguageStrategy languageStrategy)
+        public AddressJsonConverter (ILanguageStrategy languageStrategy, IAddressValidator validator)
         {
             _languageStrategy = languageStrategy;
+            _validator = validator;
         }
 
         public AddressJsonConverter()
-       : this(new EnglishLanguageStrategy())
+       : this(new EnglishLanguageStrategy(), new AddressValidator())
         {
         }
 
         public override Address ReadJson(JsonReader reader, Type objectType, Address existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             JObject obj = JObject.Load(reader);
-            return new Address(
+            var address = new Address(
                 streetName: (string)obj["vejnavn"],
                 houseNumber: (string)obj["husnr"],
                 floor: (string)obj["etage"],
@@ -34,6 +38,11 @@
                 postalCode: (string)obj["postnr"],
                 postalCodeName: (string)obj["postnrnavn"]
             );
+
+            // Validate the address using the injected validator
+            _validator.Validate(address);
+
+            return address;
         }
 
         public override void WriteJson(JsonWriter writer, Address value, JsonSerializer serializer)

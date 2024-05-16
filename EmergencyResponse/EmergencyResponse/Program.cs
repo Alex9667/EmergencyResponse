@@ -8,6 +8,8 @@ using EmergencyResponse.Services;
 using EmergencyResponse.Services.DataExport.Mapping;
 using EmergencyResponse.Services.DataExport;
 using Newtonsoft.Json;
+using EmergencyResponse.SharedClasses.Validation.Interfaces;
+using EmergencyResponse.SharedClasses.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,7 @@ builder.Services.AddScoped<JsonSerializer>();
 builder.Services.AddScoped<IApiMessageHandler, ApiMessageHandler>();
 builder.Services.AddSingleton<ILanguageStrategyFactory, LanguageStrategyFactory>(); 
 builder.Services.AddTransient<IDataExportService, JsonDataExportService>();
+builder.Services.AddScoped<IAddressValidator, AddressValidator>();
 
 var app = builder.Build();
 

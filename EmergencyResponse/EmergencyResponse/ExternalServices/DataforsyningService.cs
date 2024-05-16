@@ -11,16 +11,19 @@
     using EmergencyResponse.DTO;
     using System.Text.Json;
     using EmergencyResponse.Services;
+    using EmergencyResponse.SharedClasses.Validation.Interfaces;
 
     public class DataforsyningenService : IDataforsyningService
     {
         private readonly HttpClient _httpClient;
         private readonly IApiMessageHandler _apiMessageHandler;
+        private readonly IAddressValidator _addressValidator;
 
-        public DataforsyningenService(HttpClient httpClient, IApiMessageHandler apiMessageHandler)
+        public DataforsyningenService(HttpClient httpClient, IApiMessageHandler apiMessageHandler, IAddressValidator addressValidator)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _apiMessageHandler = apiMessageHandler;
+            _addressValidator = addressValidator;
         }
 
         public async Task<Address> GetAddressAsync(Address address)
@@ -46,6 +49,9 @@
                     var addressData = addresses[0];
                     address.SetLatitude((double)addressData.y);
                     address.SetLongitude((double)addressData.x);
+
+                    _addressValidator.Validate(address);
+
                     return address;
                 }
                 else
@@ -76,6 +82,12 @@
                     NullValueHandling = NullValueHandling.Ignore,
                     Converters = new List<JsonConverter> { new AddressJsonConverter() }
                 });
+
+                foreach (Address address in addresses)
+                {
+                    _addressValidator.Validate(address);
+                }
+
                 return addresses;
             }
             else
