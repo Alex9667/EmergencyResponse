@@ -2,7 +2,11 @@
 @using EmergencyResponse.Model
 @using EmergencyResponse.ExternalServices
 @using EmergencyResponse.ExternalServices.Interfaces
+@using EmergencyResponse.Services.DataExport
+@using System.Text
 @inject IDataforsyningService DataforsyningService
+@inject IDataExportService DataExportService
+@inject IJSRuntime JS
 
 <PageTitle>Point</PageTitle>
 
@@ -40,6 +44,14 @@ else
             </li>
         }
     </ul>
+    <div>
+        <label for="languageSelect">Select output language:</label>
+        <select @onchange="HandleLanguageChange" id="languageSelect">
+            <option value="English">English</option>
+            <option value="Danish">Danish</option>
+        </select>
+        <button class="btn btn-primary" @onclick="ExportCSV">Export CSV</button>
+    </div>
 }
 else if (addresses != null)
 {
@@ -50,6 +62,7 @@ else if (addresses != null)
     private Address? address;
     private List<Address>? addresses;
     private int radius = 10; // Default radius
+    private OutputLanguage selectedLanguage = OutputLanguage.English;
 
     private async Task FetchAddress()
     {
@@ -69,6 +82,21 @@ else if (addresses != null)
         {
             radius = newRadius;
         }
+    }
+
+    private void HandleLanguageChange(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<OutputLanguage>(e.Value?.ToString(), out var language))
+        {
+            selectedLanguage = language;
+        }
+    }
+
+    private async Task ExportCSV()
+    {
+        var csvContent = await DataExportService.ExportAddressesToJson(addresses, selectedLanguage);
+        byte[] bytes = Encoding.UTF8.GetBytes(csvContent);
+        await JS.InvokeVoidAsync("saveAsFile", "Addresses.csv", Convert.ToBase64String(bytes));
     }
 }
 

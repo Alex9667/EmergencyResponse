@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using EmergencyResponse.Model;
 using EmergencyResponse.Services;
+using EmergencyResponse.Services.DataExport.Mapping;
+using EmergencyResponse.Services.DataExport;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
-
+builder.Services.AddLogging(config =>
+{
+    config.AddConsole();  // Or any other logging provider
+    config.AddDebug();
+});
 
 // Register DataforsyningenService with HttpClient
 builder.Services.AddHttpClient<IDataforsyningService, DataforsyningenService>(client =>
@@ -26,7 +33,10 @@ builder.Services.AddHttpClient<IDatafordelerenService, DatafordelerenService>(cl
     client.BaseAddress = new Uri("https://services.datafordeler.dk/");
 });
 
+builder.Services.AddScoped<JsonSerializer>();
 builder.Services.AddScoped<IApiMessageHandler, ApiMessageHandler>();
+builder.Services.AddSingleton<ILanguageStrategyFactory, LanguageStrategyFactory>(); 
+builder.Services.AddTransient<IDataExportService, JsonDataExportService>();
 
 var app = builder.Build();
 
