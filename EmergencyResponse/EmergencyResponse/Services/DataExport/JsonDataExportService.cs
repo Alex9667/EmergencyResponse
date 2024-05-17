@@ -10,13 +10,11 @@ namespace EmergencyResponse.Services.DataExport
     {
         private readonly JsonSerializer _serializer;
         private readonly ILanguageStrategyFactory _languageStrategyFactory;
-        private readonly IAddressValidator _addressValidator;
 
         public JsonDataExportService(JsonSerializer serializer, ILanguageStrategyFactory languageStrategyFactory, IAddressValidator addressValidator)
         {
             _serializer = serializer;
             _languageStrategyFactory = languageStrategyFactory;
-            _addressValidator = addressValidator;
         }
 
         public async Task<string> ExportAddressesToJson(List<Address> addresses, OutputLanguage language)
@@ -27,7 +25,7 @@ namespace EmergencyResponse.Services.DataExport
                 writer.WriteStartArray();
                 //Which strategy for language mapping the Jsonconverter should use, based on the OutputLanguage enum
                 var languageStrategy = _languageStrategyFactory.Create(language);
-                var converter = new AddressJsonConverter(languageStrategy,_addressValidator);
+                var converter = new AddressJsonConverter(languageStrategy);
                 //Adds the AddressJsonConverter to our jsonSerializer
                 _serializer.Converters.Add(converter);
 

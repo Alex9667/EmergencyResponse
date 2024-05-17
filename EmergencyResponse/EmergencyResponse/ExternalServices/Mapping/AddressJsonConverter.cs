@@ -13,17 +13,15 @@
     public class AddressJsonConverter : JsonConverter<Address>
     {
         private readonly ILanguageStrategy _languageStrategy;
-        private readonly IAddressValidator _validator;
 
 
-        public AddressJsonConverter (ILanguageStrategy languageStrategy, IAddressValidator validator)
+        public AddressJsonConverter (ILanguageStrategy languageStrategy)
         {
             _languageStrategy = languageStrategy;
-            _validator = validator;
         }
 
         public AddressJsonConverter()
-       : this(new EnglishLanguageStrategy(), new AddressValidator())
+       : this(new EnglishLanguageStrategy())
         {
         }
 
@@ -38,9 +36,6 @@
                 postalCode: (string)obj["postnr"],
                 postalCodeName: (string)obj["postnrnavn"]
             );
-
-            // Validate the address using the injected validator
-            _validator.Validate(address);
 
             return address;
         }
