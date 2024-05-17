@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace EmergencyResponseTest
 {
@@ -22,9 +23,20 @@ namespace EmergencyResponseTest
         [MemberData(nameof(GetJordstykkeFromDarTestData))]
         public async Task DataFordelerenService_GetJordstykkeFromDAR_ShouldReturnExpectedNumber(string addressId, string expectedJordstykkeValue)
         {
-            var mockHttpClient = new Mock<HttpClient>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<System.Threading.CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new StringContent(string.Empty),
+                });
+
+            var mockHttpClient = new Mock<HttpClient>(mockHttpMessageHandler.Object);
+            mockHttpClient.Object.BaseAddress = new Uri("https://services.datafordeler.dk/");
+
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
-            mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<string>() { expectedJordstykkeValue });
+            mockApiMessageHandler.Setup(m => m.GetNestedPropertyFromJson(It.IsAny<string>(), It.IsAny<string[]>())).Returns(expectedJordstykkeValue);
             _datafordelerenService = new DatafordelerenService(mockHttpClient.Object, mockApiMessageHandler.Object);
             string result = await _datafordelerenService.GetJordstykkeFromDAR(addressId);
             result.Should().BeEquivalentTo(expectedJordstykkeValue);
@@ -34,7 +46,17 @@ namespace EmergencyResponseTest
         [MemberData(nameof(GetJordstykkeFromDarTestData))]
         public async Task DataFordelerenService_GetGrundIdFromBBR_ShouldReturnExpectedId(string jordstykke, string expectedGrundIdValue)
         {
-            var mockHttpClient = new Mock<HttpClient>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<System.Threading.CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new StringContent(string.Empty),
+                });
+
+            var mockHttpClient = new Mock<HttpClient>(mockHttpMessageHandler.Object);
+            mockHttpClient.Object.BaseAddress = new Uri("https://services.datafordeler.dk/");
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
             mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<string>() { expectedGrundIdValue });
             _datafordelerenService = new DatafordelerenService(mockHttpClient.Object, mockApiMessageHandler.Object);
