@@ -21,9 +21,11 @@ namespace EmergencyResponse.Services
                 string? floor = floorProperty.ValueKind == JsonValueKind.Null ? null : floorProperty.GetString();
                 item.TryGetProperty("dør", out var doorProperty);
                 string? door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
+                var latitude = item.GetProperty("x").GetDouble();
+                var longitude = item.GetProperty("y").GetDouble();
                 var addressId = item.GetProperty("id").GetString();
-                var returnAddress = new Address(streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId);
-                result.Add(new AddressDTO(returnAddress));
+                var returnAddress = new AddressDTO(streetname, houseNumber, floor, door, postalCode, postalCodeName, latitude, longitude, addressId);
+                result.Add(returnAddress);
             }
             return result;
         }

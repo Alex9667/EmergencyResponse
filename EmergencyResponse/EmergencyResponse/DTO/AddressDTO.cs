@@ -12,6 +12,8 @@ namespace EmergencyResponse.DTO
         public string? PostalCodeName { get; set; }
         public string? AddressId { get; set; }
         public int? BFE { get; set; } = null;
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
 
         public AddressDTO(Address address)
         {
@@ -33,6 +35,20 @@ namespace EmergencyResponse.DTO
             PostalCodeName = postalCodeName;
             AddressId = addressId;
         }
+
+        public AddressDTO(string streetName, string houseNumber, string? floor, string? door, string postalCode, string? postalCodeName, double latitude, double longitude, string? addressId = null)
+        {
+            StreetName = streetName;
+            HouseNumber = houseNumber;
+            Floor = floor;
+            Door = door;
+            PostalCode = postalCode;
+            PostalCodeName = postalCodeName;
+            AddressId = addressId;
+            Latitude = latitude;
+            Longitude = longitude;
+        }
+
         public AddressDTO()
         {
         }

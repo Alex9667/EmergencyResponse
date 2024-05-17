@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AngleSharp.Html.Dom;
-using Bunit;
+﻿using Bunit;
 using EmergencyResponse.DTO;
 using EmergencyResponse.ExternalServices.Interfaces;
 using EmergencyResponse.Pages;
-using EmergencyResponse.ExternalServices.Interfaces;
 using Moq;
-using EmergencyResponse.DTO;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EmergencyResponseTest
@@ -87,6 +79,7 @@ namespace EmergencyResponseTest
             using var ctx = new TestContext();
 
             var mockDataFordelerService = new Mock<IDatafordelerenService>();
+            mockDataFordelerService.Setup(m => m.GetAddressesInBuilding(It.IsAny<AddressDTO>())).ReturnsAsync(addresses);
             var mockDataForsyningService = new Mock<IDataforsyningService>();
 
             ctx.Services.AddSingleton<IDatafordelerenService>(mockDataFordelerService.Object);

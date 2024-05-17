@@ -6,6 +6,7 @@ namespace EmergencyResponse.Services
 {
     public interface IApiMessageHandler
     {
+
         public List<AddressDTO> ParseAddressesFromDataForsyning(string json);
         public List<string> GetPropertyFromJson(string json, string propertyName);
         string GetNestedPropertyFromJson(string json, params string[] keyValues);

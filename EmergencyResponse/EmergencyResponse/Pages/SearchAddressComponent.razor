@@ -1,15 +1,21 @@
-﻿@page "/searchAddress"
+﻿@page "/"
 @using EmergencyResponse.DTO
 @using EmergencyResponse.ExternalServices
 @using EmergencyResponse.ExternalServices.Interfaces
 @using EmergencyResponse.Model
 @using EmergencyResponse.Controller
+@using EmergencyResponse.Services.DataExport;
+@using EmergencyResponse.SharedClasses.Mapping;
 @inject IDataforsyningService dataforsyningService
 @inject IDatafordelerenService dataFordelerenService
+@inject IDataExportService dataExportService
+@inject IJSRuntime JS
 
-
+<div class="banner">
+    Emergency Response
+</div>
+<hr class="separator" />
 <h3>Søg efter adresse</h3>
-<h2>Address Details</h2>
 <div style="display: flex;">
     @if (validationText != null && validationText != "")
     {
@@ -21,36 +27,49 @@
         </div>
     }
     <div class="container">
-        <div class="input-wrapper">
-            <form @onsubmit="SearchAddress" class="input">
+        <div>
+            <div class="input-wrapper">
+                <form @onsubmit="SearchAddress" class="input">
+                    <div>
+                        <label for="street">*Vejnavn:</label>
+                        <input required placeholder="abc" class="textInput" type="text" id="street" name="street" @bind="searchAddress.StreetName" />
+                    </div>
+                    <div>
+                        <label for="houseNumber">*Husnummer:</label>
+                        <input required placeholder="123 abc" class="textInput" type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
+                    </div>
+                    <div>
+                        <label for="postalCode">*Postnummer:</label>
+                        <input required placeholder="1234" class="textInput" type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
+                    </div>
+                    <div>
+                        <label for="postalCodeName">By:</label>
+                        <input placeholder="abc" class="textInput" type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
+                    </div>
+                    <div>
+                        <label for="floor">Etage:</label>
+                        <input placeholder="123" class="textInput" type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
+                    </div>
+                    <div>
+                        <label for="door">Dør:</label>
+                        <input placeholder="123" class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
+                    </div>
+                    <button class="button" id="submit" type="submit">Søg</button>
+                </form>
+            </div>
+
+            @if(possibleAddresses.Count > 0 && selectedAddress != null)
+            {
                 <div>
-                    <label for="street">*Vejnavn:</label>
-                    <input required placeholder="abc" class="textInput" type="text" id="street" name="street" @bind="searchAddress.StreetName" />
+                    <p>Vælg en radius for at indhente <br> nærtliggende addresser</p>
+                    <input type="range" min="1" max="20" value="@radius" @oninput="HandleRadiusChange" />
+                    <p>Valgt radius: @radius km</p>
+                    <button class="btn btn-primary" @onclick="FetchAddresses">Hent</button>
                 </div>
-                <div>
-                    <label for="houseNumber">*Husnummer:</label>
-                    <input required placeholder="123 abc" class="textInput" type="text" id="houseNumber" name="houseNumber" @bind="searchAddress.HouseNumber" />
-                </div>
-                <div>
-                    <label for="postalCode">*Postnummer:</label>
-                    <input required placeholder="1234" class="textInput" type="text" id="postalCode" name="postalCode" @bind="searchAddress.PostalCode" />
-                </div>
-                <div>
-                    <label for="postalCodeName">By:</label>
-                    <input placeholder="abc" class="textInput" type="text" id="postalCodeName" name="postalCodeName" @bind="searchAddress.PostalCodeName" />
-                </div>
-                <div>
-                    <label for="floor">Etage:</label>
-                    <input placeholder="123" class="textInput" type="text" id="floor" name="floor" @bind="searchAddress.Floor" />
-                </div>
-                <div>
-                    <label for="door">Dør:</label>
-                    <input placeholder="123" class="textInput" type="text" id="door" name="door" @bind="searchAddress.Door" />
-                </div>
-                <button class="button" id="submit" type="submit">Søg</button>
-            </form>
+            }
         </div>
-        @if (possibleAddresses.Count > 0)
+
+        @if (possibleAddresses != null && possibleAddresses.Count > 0)
         {
             <div class="table-container" id="tableContainer">
                 <table class="table">
@@ -80,6 +99,17 @@
                         }
                     </tbody>
                 </table>
+                @if(addressesCounter != null)
+                {
+                    <div>
+                        <label for="languageSelect">Vælg sprog:</label>
+                        <select @onchange="HandleLanguageChange" id="languageSelect">
+                            <option value="English">English</option>
+                            <option value="Danish">Danish</option>
+                        </select>
+                    <button @onclick="ExportCSV">Export CSV</button>
+                    </div>
+                }
             </div>
         }
         @if (showAddressNotFoundWarning)
@@ -89,22 +119,19 @@
             </div>
         }
     </div>
-    <div style="flex: 1;">
-        @if (selectedAddress != null)
-        {
-            <p>Vælg hvad du gør nu</p>
-            @selectedAddress.StreetName
-        }
-    </div>
+
 </div>
 
 @code {
     private string validationText = "";
     public AddressDTO searchAddress = new AddressDTO();
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
+    public List<AddressDTO> addressesCounter = new List<AddressDTO>();
     public List<AddressDTO> surroundingAddresses = new List<AddressDTO>();
     public AddressDTO selectedAddress;
     bool showAddressNotFoundWarning = false;
+    private OutputLanguage selectedLanguage = OutputLanguage.English;
+    private int radius = 10; // Default radius
 
     public string StreetText = "";
 
@@ -179,13 +206,63 @@
             selectedAddress = address;
             possibleAddresses.Clear();
             possibleAddresses = await dataFordelerenService.GetAddressesInBuilding(selectedAddress);
+            addressesCounter = possibleAddresses;
         }
+    }
+
+    private void HandleLanguageChange(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<OutputLanguage>(e.Value?.ToString(), out var language))
+        {
+            selectedLanguage = language;
+        }
+    }
+
+    private async Task ExportCSV()
+    {
+        List<Address> addressList = new List<Address>();
+        foreach (AddressDTO address in possibleAddresses)
+        {
+            Address add = AddressDTOtoAddressMapper.ToAddress(address);
+            addressList.Add(add);
+        }
+        var csvContent = await dataExportService.ExportAddressesToJson(addressList, selectedLanguage);
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+        await JS.InvokeVoidAsync("saveAsFile", "Addresses.csv", Convert.ToBase64String(bytes));
     }
 
     private void closePopup()
     {
         validationText = "";
     }
+
+    private void HandleRadiusChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var newRadius))
+        {
+            radius = newRadius;
+        }
+    }
+
+    private async Task FetchAddresses()
+    {
+        Address specificAddress = AddressDTOtoAddressMapper.ToAddress(selectedAddress);
+
+        List<Address> addressList = new List<Address>();
+        List<AddressDTO> addressDTOList = new List<AddressDTO>();
+        addressList = await dataforsyningService.GetAddressesInCircleAsync(specificAddress, radius);
+        foreach (Address address in addressList)
+        {
+            if(address != null)
+            {
+                AddressDTO add = AddressDTOtoAddressMapper.ToAddressDTO(address);
+                addressDTOList.Add(add);
+            }
+        }
+        possibleAddresses = addressDTOList;
+    }
+
+
 
 
 }
@@ -307,5 +384,22 @@
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         z-index: 10000; /* Ensure the popup is above the background */
+    }
+
+    .banner {
+        background-color: #423F3E;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 2.5em;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+
+    .separator {
+        border-top: 2px solid black;
+        margin: 10px 0; /* Adjust the margin as needed */
     }
 </style>
