@@ -4,12 +4,9 @@
 @using EmergencyResponse.ExternalServices.Interfaces
 @using EmergencyResponse.Model
 @using EmergencyResponse.Controller
-<!--@{
-    @inject IDataforsyningService dataforsyningService
+@inject IDataforsyningService dataforsyningService
+@inject IDatafordelerenService dataFordelerenService
 
-    //inject IDatafordelerenService dataFordelerenService
-
-} -->
 
 <h3>Søg efter adresse</h3>
 <h2>Address Details</h2>
@@ -18,8 +15,7 @@
     {
         <div class="popup-container">
             <div class="popup">
-                <h3>Validation</h3>
-                <p>@validationText</p>
+                <p style="color:red">@validationText</p>
                 <button @onclick="closePopup">Ok</button>
             </div>
         </div>
@@ -138,8 +134,7 @@
         var httpClient = new HttpClient();
         AddressController addressController = new AddressController(httpClient);
 
-        //possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
-        possibleAddresses = await addressController.SearchAddress(searchAddress);
+        possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
 
         int addressBFE = 0;
 
