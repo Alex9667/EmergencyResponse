@@ -24,7 +24,7 @@ namespace EmergencyResponseTest
         {
             var mockHttpClient = new Mock<HttpClient>();
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
-            mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedJordstykkeValue);
+            mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<string>() { expectedJordstykkeValue });
             _datafordelerenService = new DatafordelerenService(mockHttpClient.Object, mockApiMessageHandler.Object);
             string result = await _datafordelerenService.GetJordstykkeFromDAR(addressId);
             result.Should().BeEquivalentTo(expectedJordstykkeValue);
@@ -36,7 +36,7 @@ namespace EmergencyResponseTest
         {
             var mockHttpClient = new Mock<HttpClient>();
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
-            mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedGrundIdValue);
+            mockApiMessageHandler.Setup(m => m.GetPropertyFromJson(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<string>() { expectedGrundIdValue });
             _datafordelerenService = new DatafordelerenService(mockHttpClient.Object, mockApiMessageHandler.Object);
             string result = await _datafordelerenService.GetGrundIdFromBBR(jordstykke);
             result.Should().BeEquivalentTo(expectedGrundIdValue);

@@ -22,7 +22,7 @@ namespace EmergencyResponseTest
         [MemberData(nameof(GetAddressesForParseAddresses))]
         public void ApiMessageHandler_ParseAddresses_ShouldReturnAddresses(string json, List<Address> expectedAddresses)
         {
-            var result = _apiMessageHandler.ParseAddresses(json);
+            var result = _apiMessageHandler.ParseAddressesFromDataForsyning(json);
             result.Should().BeEquivalentTo(expectedAddresses);
         }
         [Theory]

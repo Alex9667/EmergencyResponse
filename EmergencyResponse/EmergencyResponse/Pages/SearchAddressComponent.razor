@@ -82,6 +82,12 @@
                 </table>
             </div>
         }
+        @if (showAddressNotFoundWarning)
+        {
+            <div id="NoMatchingAddressWarningLabel" >
+                We could not find the address you're looking for.
+            </div>
+        }
     </div>
     <div style="flex: 1;">
         @if (selectedAddress != null)
@@ -96,7 +102,9 @@
     private string validationText = "";
     public AddressDTO searchAddress = new AddressDTO();
     public List<AddressDTO> possibleAddresses = new List<AddressDTO>();
+    public List<AddressDTO> surroundingAddresses = new List<AddressDTO>();
     public AddressDTO selectedAddress;
+    bool showAddressNotFoundWarning = false;
 
     public string StreetText = "";
 
@@ -136,17 +144,20 @@
 
         possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
 
-        int addressBFE = 0;
-
-        if(possibleAddresses.Count !> 0)
+        int addressBFE;
+        if(possibleAddresses.Count > 0)
         {
             addressBFE = await addressController.GetAddressBFE($"{possibleAddresses[0].StreetName} {possibleAddresses[0].HouseNumber}");
+            foreach (var address in possibleAddresses)
+            {
+                address.BFE = addressBFE;
+            }
+        }
+        else
+        {
+            showAddressNotFoundWarning = true;
         }
 
-        foreach (var address in possibleAddresses)
-        {
-            address.BFE = addressBFE;
-        }
 
         /**
          * Udkommenteret da det tager meget lang tid at lave alle de kald for at få bfe nummeret. 
@@ -159,15 +170,14 @@
         // var httpClient = new HttpClient();
         // var addressController = new AddressController(httpClient);
     }
-
-    public void SelectAddress(AddressDTO address)
+    public async Task SelectAddress(AddressDTO address)
     {
         //Checking if any address is selected so the click event won't do aything in case one is selected
         if(selectedAddress == null)
         {
             selectedAddress = address;
             possibleAddresses.Clear();
-            possibleAddresses.Add(selectedAddress);
+            possibleAddresses = await dataFordelerenService.GetAddressesInBuilding(selectedAddress);
         }
     }
 
@@ -178,7 +188,6 @@
 
 
 }
-
 
 <style>
     .list-item {

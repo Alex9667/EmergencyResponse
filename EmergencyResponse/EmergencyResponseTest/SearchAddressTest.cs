@@ -45,6 +45,7 @@ namespace EmergencyResponseTest
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
+            mockApiMessageHandler.Setup(m => m.ParseAddressesFromDataForsyning(It.IsAny<string>())).Returns(returnedAddresses);
             var mockAddressValidator = new Mock<IAddressValidator>();
             mockApiMessageHandler.Setup(m => m.ParseAddresses(It.IsAny<string>())).Returns(returnedAddresses);
 

@@ -7,7 +7,7 @@ namespace EmergencyResponse.Services
 {
     public class ApiMessageHandler : IApiMessageHandler
     {
-        public List<AddressDTO> ParseAddresses(string json)
+        public List<AddressDTO> ParseAddressesFromDataForsyning(string json)
         {
             var obj = System.Text.Json.JsonSerializer.Deserialize<List<JsonElement>>(json);
             List<AddressDTO> result = new List<AddressDTO>();
@@ -28,26 +28,56 @@ namespace EmergencyResponse.Services
             return result;
         }
 
-        public string GetPropertyFromJson(string json, string propertyName)
+        public Address ParseSingleAddressFromDAR(string json)
         {
-            var obj = System.Text.Json.JsonSerializer.Deserialize<List<JsonElement>>(json);
-            var result = obj[0].GetProperty(propertyName).GetString();
+            var streetName = GetNestedPropertyFromJson(json, "husnummer", "navngivenVej", "vejnavn");
+            var houseNumber = GetNestedPropertyFromJson(json, "husnummer", "husnummertekst");
+            var floor = GetPropertyFromJson(json, "etagebetegnelse")[0];
+            var door = GetPropertyFromJson(json, "dørbetegnelse")[0];
+            var postalCode = GetNestedPropertyFromJson(json, "husnummer", "postnummer", "postnr");
+            var postalCodeName = GetNestedPropertyFromJson(json, "husnummer", "postnummer", "navn");
+            var result = new Address(streetName, houseNumber, floor, door, postalCode, postalCodeName);
             return result;
         }
 
-        public string GetNestedPropertyFromJson(string json, params string[] keyValues)
+        public List<string> GetPropertyFromJson(string json, string propertyName)
         {
-            var jElement = JsonSerializer.Deserialize<List<JsonElement>>(json);
-            return FindJsonElement(jElement[0], keyValues);
+            var obj = JsonSerializer.Deserialize<JsonElement>(json);
+            List<string> result = new List<string>();
+            if (obj.ValueKind == JsonValueKind.Array)
+            {
+                for (int i = 0; i < obj.GetArrayLength(); i++)
+                {
+                    result.Add(obj[i].GetProperty(propertyName).GetString());
+                }
+            }
+            else
+            {
+                result.Add(obj.GetProperty(propertyName).GetString());
+            }
+            return result;
         }
 
-        public string FindJsonElement(JsonElement element, params string[] keyValues)
+        public string GetNestedPropertyFromJson(string json, params string[] propertyNames)
         {
-            if (element.TryGetProperty(keyValues[0], out var property))
+            var jElement = JsonSerializer.Deserialize<List<JsonElement>>(json);
+            return FindJsonElement(jElement[0], propertyNames);
+        }
+
+        private string FindJsonElement(JsonElement element, params string[] propertyNames)
+        {
+            if (element.TryGetProperty(propertyNames[0], out var property))
             {
                 if (property.ValueKind == JsonValueKind.Object)
                 {
-                    return FindJsonElement(property, keyValues.Take(new Range(1, keyValues.Length)).ToArray());
+                    return FindJsonElement(property, propertyNames.Take(new Range(1, propertyNames.Length)).ToArray());
+                }
+                else if (property.ValueKind == JsonValueKind.Array)
+                {
+                    for (int i = 0; i < property.GetArrayLength(); i++)
+                    {
+                        return FindJsonElement(property[i], propertyNames.Take(new Range(1, propertyNames.Length)).ToArray());
+                    }
                 }
                 else
                 {
@@ -56,5 +86,30 @@ namespace EmergencyResponse.Services
             }
             return null;
         }
+
+        public string GetBBRBuildingIdFromJson(string content, string husnummerId, params string[] propertyNames)
+        {
+            var element = GetBuildingElementFromHusnummerId(content, husnummerId, propertyNames);
+            return GetPropertyFromJson(element, "id_lokalId")[0];
+        }
+
+        private string GetBuildingElementFromHusnummerId(string content, string husnummerId, params string[] propertyNames)
+        {
+            var elements = JsonSerializer.Deserialize<List<JsonElement>>(content);
+            JsonElement result = new JsonElement();
+            foreach (var element in elements)
+            {
+                if (element.GetRawText().Contains(husnummerId))
+                {
+                    result = element;
+                }
+            }
+            if (result.ValueKind == JsonValueKind.Null)
+            {
+                throw new Exception($"No JsonElements conatins husnummerId: {husnummerId}");
+            }
+            return result.GetRawText();
+        }
+
     }
 }
