@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Components;
 using System.Text;
 using EmergencyResponse.ExternalServices;
 using EmergencyResponse.ExternalServices.Interfaces;
-inject IDataforsyningService DataforsyningService;
-inject IDataExportService DataExportService:
-inject IJSRuntime JS;
+//inject IDataforsyningService DataforsyningService;
+//inject IDataExportService DataExportService:
+//inject IJSRuntime JS;
 
 namespace EmergencyResponse.Controller
 {
-    public class UiController
+    /*public class UiController
     {
         private Address? address;
         private List<Address>? addresses;
@@ -53,5 +53,5 @@ namespace EmergencyResponse.Controller
             byte[] bytes = Encoding.UTF8.GetBytes(csvContent);
             await JS.InvokeVoidAsync("saveAsFile", "Addresses.csv", Convert.ToBase64String(bytes));
         }
-    }
+    }*/
 }

@@ -138,6 +138,7 @@
             validationText = "Dør må ikke indeholde bogstaver";
             return;
         }
+        showAddressNotFoundWarning = false;
         selectedAddress = null;
         var httpClient = new HttpClient();
         AddressController addressController = new AddressController(httpClient);
