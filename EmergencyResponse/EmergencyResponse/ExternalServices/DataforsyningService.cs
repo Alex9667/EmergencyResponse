@@ -71,7 +71,7 @@
             string longitudeString = center.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
             string latitudeString = center.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
             string radiusString = radius.ToString();
-            string url = $"https://api.dataforsyningen.dk/adresser?cirkel={longitudeString},{latitudeString},{radiusString}&struktur=mini";
+            string url = $"https://api.dataforsyningen.dk/adresser?cirkel={latitudeString},{longitudeString},{radiusString}&struktur=mini";
             HttpResponseMessage response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
