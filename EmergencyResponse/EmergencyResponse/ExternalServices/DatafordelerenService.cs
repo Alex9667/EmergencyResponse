@@ -21,7 +21,12 @@ namespace EmergencyResponse.ExternalServices
             var grundId = await GetGrundIdFromBBR(jordstykkeNummer);
             var buildingId = await GetBuildingIdFromBBR(grundId, husnummerId);
             var unitIds = await GetUnitsIdsFromBBR(buildingId);
-            return await GetUnitAddressesFromDAR(unitIds);
+            var result = await GetUnitAddressesFromDAR(unitIds);
+            if (result.Count == 0)
+            {
+                result.Add(address);
+            }
+            return result;
         }
 
         public async Task<string> CallApi(string url)
