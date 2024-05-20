@@ -10,45 +10,24 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
 using EmergencyResponse.DTO;
+using EmergencyResponse.ExternalServices.Interfaces;
 
 namespace EmergencyResponse.Controller
 {
     public class AddressController : ControllerBase
     {
+        private readonly IDataforsyningService _dataforsyningService;
         private readonly HttpClient _httpClient;
 
-        public AddressController(HttpClient httpClient)
+        public AddressController(HttpClient httpClient, IDataforsyningService dataforsyningService)
         {
             _httpClient = httpClient;
+            _dataforsyningService = dataforsyningService;
         }
 
         public async Task<List<AddressDTO>> SearchAddress(AddressDTO address)
         {
-            var floorValue = address.Floor == null ? "" : address.Floor.ToString();
-            var doorValue = address.Door == null ? "" : address.Door;
-            var URL = $"https://api.dataforsyningen.dk/adresser?q={address.StreetName} " +
-                $"{address.HouseNumber} " +
-                $"{address.PostalCode} " +
-                $"{floorValue} " +
-                $"{doorValue}&struktur=mini";
-            var response = await _httpClient.GetAsync(URL);
-            var obj = JsonSerializer.Deserialize<List<JsonElement>>(response.Content.ReadAsStream());
-            List<AddressDTO> result = new List<AddressDTO>();
-            foreach (var item in obj)
-            {
-                var streetname = item.GetProperty("vejnavn").GetString();
-                var houseNumber = item.GetProperty("husnr").GetString();
-                var postalCode = item.GetProperty("postnr").GetString();
-                var postalCodeName = item.GetProperty("postnrnavn").GetString();
-                item.TryGetProperty("etage", out var floorProperty);
-                string? floor = floorProperty.ValueKind == JsonValueKind.Null ? null : floorProperty.GetString();
-                item.TryGetProperty("dør", out var doorProperty);
-                string door = doorProperty.ValueKind == JsonValueKind.Null ? null : doorProperty.GetString();
-                var addressId = item.GetProperty("id").GetString();
-                var returnAddress = new Address(streetname, houseNumber, floor, door, postalCode, postalCodeName, addressId);
-                result.Add(new AddressDTO(returnAddress));
-            }
-            return result;
+            return await _dataforsyningService.SearchAddress(address);
         }
         public async Task<int> GetAddressBFE(string address)
         {

@@ -168,7 +168,7 @@
         showAddressNotFoundWarning = false;
         selectedAddress = null;
         var httpClient = new HttpClient();
-        AddressController addressController = new AddressController(httpClient);
+        AddressController addressController = new AddressController(httpClient, dataforsyningService);
 
         possibleAddresses = await dataforsyningService.SearchAddress(searchAddress);
 

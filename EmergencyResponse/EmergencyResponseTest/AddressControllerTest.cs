@@ -14,6 +14,7 @@ using Moq.Protected;
 using System.Text.Json;
 using System.Net.Http;
 using EmergencyResponse.DTO;
+using EmergencyResponse.ExternalServices.Interfaces;
 
 namespace EmergencyResponseTest
 {
@@ -24,8 +25,9 @@ namespace EmergencyResponseTest
         {
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             var httpClient = new HttpClient(/*mockHttpMessageHandler.Object*/);
+            var mockDataForsyningenService = new Mock<IDataforsyningService>(MockBehavior.Strict);
 
-            _addressController = new AddressController(httpClient);
+            _addressController = new AddressController(httpClient, mockDataForsyningenService.Object);
         }
 
         [Theory]
