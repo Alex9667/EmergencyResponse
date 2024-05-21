@@ -1,4 +1,5 @@
 ﻿using EmergencyResponse.Controller;
+using EmergencyResponse.ExternalServices.Interfaces;
 using Moq;
 
 
@@ -14,8 +15,8 @@ namespace SpecFlowTests.StepDefinitions
         {
             //var mockHttpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
             var httpClient = new HttpClient();
-
-            _addressController = new AddressController(httpClient);
+            var mockDataForsyningService = new Mock<IDataforsyningService>();
+            _addressController = new AddressController(httpClient, mockDataForsyningService.Object);
         }
 
         [Given("the street is (.*)")]
