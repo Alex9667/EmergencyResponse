@@ -42,8 +42,9 @@ namespace EmergencyResponseTest
                     StatusCode = System.Net.HttpStatusCode.OK,
                     Content = new StringContent(string.Empty),
                 });
-
+            
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+            httpClient.BaseAddress = new Uri("https://api.dataforsyningen.dk/");
             var mockApiMessageHandler = new Mock<IApiMessageHandler>();
             mockApiMessageHandler.Setup(m => m.ParseAddressesFromDataForsyning(It.IsAny<string>())).Returns(returnedAddresses);
             var mockAddressValidator = new Mock<IAddressValidator>();
@@ -65,53 +66,6 @@ namespace EmergencyResponseTest
                         new AddressDTO("Æblevej", "15", "2", "b", "5000", "odense C", "skjekskjf"),
                         new AddressDTO("Æblevej", "15", "2", "c", "5000", "odense C", "ldgjrigdl")
                     },
-#region API-json
-                    //"[{" +
-                    //    "\"vejnavn\":\"Æblevej\"," +
-                    //    "\"husnr\":\"15\"," +
-                    //    "\"etage\":\"1\"," +
-                    //    "\"dør\":\"a\"," +
-                    //    "\"postnr\":\"5000\"," +
-                    //    "\"postnrnavn\":\"odense C\"," +
-                    //    "\"id\":\"nnkdnvkdn\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Æblevej\"," +
-                    //    "\"husnr\":\"15\"," +
-                    //    "\"etage\":\"1\"," +
-                    //    "\"dør\":\"c\"," +
-                    //    "\"postnr\":\"5000\"," +
-                    //    "\"postnrnavn\":\"odense C\"," +
-                    //    "\"id\":\"joidsdlksjls\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Æblevej\"," +
-                    //    "\"husnr\":\"15\"," +
-                    //    "\"etage\":\"2\"," +
-                    //    "\"dør\":\"a\"," +
-                    //    "\"postnr\":\"5000\"," +
-                    //    "\"postnrnavn\":\"odense C\"," +
-                    //    "\"id\":\"eksknfkskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Æblevej\"," +
-                    //    "\"husnr\":\"15\"," +
-                    //    "\"etage\":\"2\"," +
-                    //    "\"dør\":\"b\"," +
-                    //    "\"postnr\":\"5000\"," +
-                    //    "\"postnrnavn\":\"odense C\"," +
-                    //    "\"id\":\"skjekskjf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Æblevej\"," +
-                    //    "\"husnr\":\"15\"," +
-                    //    "\"etage\":\"2\"," +
-                    //    "\"dør\":\"c\"," +
-                    //    "\"postnr\":\"5000\"," +
-                    //    "\"postnrnavn\":\"odense C\"," +
-                    //    "\"id\":\"ldgjrigdl\"" +
-                    //    "}]"
-#endregion
                 },
                 new object[] {
                     new AddressDTO("Hovedgaden", "7", null, null, "5230", "odense M"),
@@ -124,71 +78,6 @@ namespace EmergencyResponseTest
                         new AddressDTO("Hovedgaden", "7", "4", "th", "5230", "odense M", "hkdhkfjskf"),
                         new AddressDTO("Hovedgaden", "7", "4", "tv", "5230", "odense M", "hkdhkfjskf")
                     },
-#region API-json
-                    //"[{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"1\"," +
-                    //    "\"dør\":\"th\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"1\"," +
-                    //    "\"dør\":\"tv\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"2\"," +
-                    //    "\"dør\":\"tv\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"3\"," +
-                    //    "\"dør\":\"th\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"3\"," +
-                    //    "\"dør\":\"tv\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"4\"," +
-                    //    "\"dør\":\"th\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}," +
-                    //"{" +
-                    //    "\"vejnavn\":\"Hovedgaden\"," +
-                    //    "\"husnr\":\"7\"," +
-                    //    "\"etage\":\"4\"," +
-                    //    "\"dør\":\"tv\"," +
-                    //    "\"postnr\":\"5230\"," +
-                    //    "\"postnrnavn\":\"odense M\"," +
-                    //    "\"id\":\"hkdhkfjskf\"" +
-                    //"}]"
-#endregion
                 },
                 new object[] {
                     new AddressDTO("Mellemvej", "7", null, null, "5230", "odense M"),

@@ -19,8 +19,8 @@ namespace EmergencyResponseTest
             _apiMessageHandler = new ApiMessageHandler();
         }
         [Theory]
-        [MemberData(nameof(GetAddressesForParseAddresses))]
-        public void ApiMessageHandler_ParseAddresses_ShouldReturnAddresses(string json, List<Address> expectedAddresses)
+        [MemberData(nameof(ParseAddressesData))]
+        public void ApiMessageHandler_ParseAddresses_ShouldReturnAddresses(string json, List<AddressDTO> expectedAddresses)
         {
             var result = _apiMessageHandler.ParseAddressesFromDataForsyning(json);
             result.Should().BeEquivalentTo(expectedAddresses);
@@ -37,14 +37,14 @@ namespace EmergencyResponseTest
         }
 
         [Theory]
-        [MemberData(nameof(GetAddressesForParseAddresses))]
+        [MemberData(nameof(GetJsonForGetNestedPropertyFromJsonn))]
         public void ApiMessageHandler_GetNestedPropertyFromJson_ShouldReturnProperty(string json, string expectedPropertyValue, params string[] propertyNames)
         {
             var result = _apiMessageHandler.GetNestedPropertyFromJson(json, propertyNames);
             result.Should().BeEquivalentTo(expectedPropertyValue);
         }
 
-        public static IEnumerable<Object[]> GetAddressesForParseAddresses()
+        public static IEnumerable<Object[]> GetJsonForGetNestedPropertyFromJsonn()
         {
             return new List<object[]> {
                 new object[] {
@@ -59,16 +59,16 @@ namespace EmergencyResponseTest
                 },
             };
         }
-        public static IEnumerable<Object[]> GetJsonForGetNestedPropertyFromJson()
+        public static IEnumerable<Object[]> ParseAddressesData()
         {
             return new List<object[]> {
                 new object[] {
                     File.ReadAllText("./JsonData/DataForsyningenAddressJson.json"),
-                    new List<Address> {
-                        new Address("Mellemvej", "7", "1", "th", "5230", "odense M", "hkdhkfjskf"),
-                        new Address("Mellemvej", "7", "1", "tv", "5230", "odense M", "hkdhkfjskf"),
-                        new Address("Mellemvej", "7", "st", "th", "5230", "odense M", "hkdhkfjskf"),
-                        new Address("Mellemvej", "7", "st", "tv", "5230", "odense M", "hkdhkfjskf"),
+                    new List<AddressDTO> {
+                        new AddressDTO("Mellemvej", "7", "1", "th",  "5230", "odense M", 8.748394, 56.758394, "hkdhkfjskf"),
+                        new AddressDTO("Mellemvej", "7", "1", "tv",  "5230", "odense M", 8.748394, 56.748394, "hkdhkfjskf"),
+                        new AddressDTO("Mellemvej", "7", "st", "th", "5230", "odense M", 8.748394, 56.758394, "hkdhkfjskf"),
+                        new AddressDTO("Mellemvej", "7", "st", "tv", "5230", "odense M", 8.748394, 56.748394, "hkdhkfjskf"),
                     },
                 },
             };

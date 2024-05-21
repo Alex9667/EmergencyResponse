@@ -4,6 +4,7 @@ using EmergencyResponse.ExternalServices.Interfaces;
 using EmergencyResponse.Pages;
 using Moq;
 using Microsoft.Extensions.DependencyInjection;
+using EmergencyResponse.Services.DataExport;
 
 namespace EmergencyResponseTest
 {
@@ -12,6 +13,7 @@ namespace EmergencyResponseTest
         private readonly TestContext _ctx;
         private readonly Mock<IDataforsyningService> _mockDataforsyningService;
         private readonly Mock<IDatafordelerenService> _mockDatafordelerenService;
+        private readonly Mock<IDataExportService> _mockDataExportService;
 
         public SearchAddressComponentTest()
         {
@@ -20,10 +22,13 @@ namespace EmergencyResponseTest
             // Create mock services
             _mockDataforsyningService = new Mock<IDataforsyningService>();
             _mockDatafordelerenService = new Mock<IDatafordelerenService>();
+            _mockDataExportService = new Mock<IDataExportService>();
+
 
             // Register the mock services in the test context
             _ctx.Services.AddSingleton<IDataforsyningService>(_mockDataforsyningService.Object);
             _ctx.Services.AddSingleton<IDatafordelerenService>(_mockDatafordelerenService.Object);
+            _ctx.Services.AddSingleton<IDataExportService>(_mockDataExportService.Object);
         }
 
 
@@ -76,16 +81,16 @@ namespace EmergencyResponseTest
         [MemberData(nameof(GetAddresses))]
         public void SelectAddressFromList_ShouldSetSelectedAddress(List<AddressDTO> addresses)
         {
-            using var ctx = new TestContext();
-
             var mockDataFordelerService = new Mock<IDatafordelerenService>();
             mockDataFordelerService.Setup(m => m.GetAddressesInBuilding(It.IsAny<AddressDTO>())).ReturnsAsync(addresses);
             var mockDataForsyningService = new Mock<IDataforsyningService>();
+            var mockDataExportService = new Mock<IDataExportService>();
 
-            ctx.Services.AddSingleton<IDatafordelerenService>(mockDataFordelerService.Object);
-            ctx.Services.AddSingleton<IDataforsyningService>(mockDataForsyningService.Object);
+            _ctx.Services.AddSingleton<IDatafordelerenService>(mockDataFordelerService.Object);
+            _ctx.Services.AddSingleton<IDataforsyningService>(mockDataForsyningService.Object);
+            _ctx.Services.AddSingleton<IDataExportService>(mockDataExportService.Object);
 
-            var component = ctx.RenderComponent<SearchAddressComponent>();
+            var component = _ctx.RenderComponent<SearchAddressComponent>();
 
             component.Instance.possibleAddresses.AddRange(addresses);
             component.Render();
